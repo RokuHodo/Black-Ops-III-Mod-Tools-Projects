@@ -224,6 +224,46 @@ class PausableTimer
 
 ------------------------------------------------------------- */
 
+function CompareStrings( string_1, string_2, ignore_case )
+{
+	valid = false;
+
+	if( !isdefined( ignore_case ) )
+	{
+		ignore_case = false;
+	}
+
+	if( !isValidString( string_1 ) || !isValidString( string_2 ) )
+	{
+		return valid;
+	}
+
+	if( ignore_case )
+	{
+		valid = ToLower( string_1 ) == ToLower( string_2 );		
+	}
+	else
+	{
+		valid = string_1 == string_2;
+	}
+
+	return valid;
+}
+
+function isValidArray( array )
+{
+	if( !isdefined( array ) )
+	{
+		return false;
+	}
+
+	if( !IsArray( array ) )
+	{
+		return false;
+	}
+
+	return true;
+}
 
 function DestroyOnNotify( hud, notification )
 {
