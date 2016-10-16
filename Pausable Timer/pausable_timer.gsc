@@ -12,17 +12,20 @@
 #namespace quarantine_chaos;
 
 #precache( "string", "MOD_ALPHA_ZOMBIE_RELEASED_COUNTDOWN" );
-#precache( "string", "MOD_ALPHA_ZOMBIE_RELEASED" );
 #precache( "string", "MOD_WAITING_FOR_MORE_HUMANS" );
 
-function StartAlphaZombieCountdown()
-{
+//example use case
+function StartCountdown()
+{	
 	level.countdown_timer = new PausableTimer();
 
 	//must be called before anything is drawn
+	//set up everything before hand so things just need to be drawn 
 	[[ level.countdown_timer ]]->SetHudOffset( -5, 0 );													
-	[[ level.countdown_timer ]]->SetTimerProperties( 1, 1.5, "LEFT", "LEFT", 10, 0, 60, &"MOD_WAITING_FOR_MORE_HUMANS", &"MOD_ALPHA_ZOMBIE_RELEASED_COUNTDOWN" );
+	[[ level.countdown_timer ]]->SetTimerProperties( 1, 1.5, "LEFT", "LEFT", 10, 0, 5, &"QC_WAITING_FOR_MORE_HUMANS", &"QC_ALPHA_ZOMBIE_COUNTDOWN" );
 	[[ level.countdown_timer ]]->SetBackgroundProperties( 0.5, "white", 170, 160, ( 0, 0, 0 ) );
+
+	level waittill( "prematch_over" );
 
 	[[ level.countdown_timer ]]->CreateTimer();
 	[[ level.countdown_timer ]]->CreateBackground();
@@ -34,6 +37,10 @@ function StartAlphaZombieCountdown()
 	
 	[[ level.countdown_timer ]]->Start();
 	level.countdown_timer.started = true;
+
+	level waittill( "countdown_complete" );
+
+	level thread PickAlphaZombie();
 }
 
 class PausableTimer
@@ -50,6 +57,8 @@ class PausableTimer
 	var timer;					//timer object
 	var background;				//bg shader object
 
+	var time_left;
+
 	constructor()
 	{
 		//initialize everything
@@ -60,6 +69,8 @@ class PausableTimer
 		time_data.left = 0;
 		time_data.stop = 0;
 		time_data.start = 0;
+
+		time_left = 0;
 
 		hud_offset = SpawnStruct();
 		background_widths = SpawnStruct();
@@ -152,6 +163,11 @@ class PausableTimer
 
 	function Start()
 	{
+		if( running )
+		{
+			return;
+		}
+
 		if( !started )
 		{
 			self thread MonitorTimerDestroy();
@@ -173,6 +189,11 @@ class PausableTimer
 
 	function Pause()
 	{
+		if( !running )
+		{
+			return;
+		}
+
 		running = false;
 
 		//calculate the time to set the timer to when it is started again
@@ -189,172 +210,33 @@ class PausableTimer
 
 	function private MonitorTimerDestroy()
 	{
-		remaining = time_data.left;
+		time_left = time_data.left;
 
 		do
 		{
 			if( !running )
 			{
 				//the timer is paused, time_data.left is already calculated and is remaining
-				remaining = time_data.left;
+				time_left = time_data.left;
 			}
 			else
 			{
 				//get how much time has passed since the timer was last started
-				remaining = time_data.left - ( Abs( GetTime() - time_data.start ) / 1000 );
+				time_left = time_data.left - ( Abs( GetTime() - time_data.start ) / 1000 );
 			}
 
 			WAIT_SERVER_FRAME;
 		}
-		while( remaining > 0 );
+		while( time_left > 0 );
+
+		started = false;
+		running = false;
 
 		wait( 1 );
 
 		//destroy the entire timer
 		self notify( "destroy_pausable_all" );
+
+		level notify( "countdown_complete" );
 	}
-}
-
-
-
-/* -------------------------------------------------------------
-
-	Extra utility functions I use,
-	Either use these or handle these with your own functions
-
-------------------------------------------------------------- */
-
-function CompareStrings( string_1, string_2, ignore_case )
-{
-	valid = false;
-
-	if( !isdefined( ignore_case ) )
-	{
-		ignore_case = false;
-	}
-
-	if( !isValidString( string_1 ) || !isValidString( string_2 ) )
-	{
-		return valid;
-	}
-
-	if( ignore_case )
-	{
-		valid = ToLower( string_1 ) == ToLower( string_2 );		
-	}
-	else
-	{
-		valid = string_1 == string_2;
-	}
-
-	return valid;
-}
-
-function isValidArray( array )
-{
-	if( !isdefined( array ) )
-	{
-		return false;
-	}
-
-	if( !IsArray( array ) )
-	{
-		return false;
-	}
-
-	return true;
-}
-
-function DestroyOnNotify( hud, notification )
-{
-	if( !isdefined( hud ) || !isValidString( notification ) )
-	{
-		return;
-	}
-
-	self waittill( notification );
-
-	hud Destroy();
-}
-
-function CreateServerTimer( alpha, font_scale, point, relative, x, y, time, label = "" )
-{
-	timer = hud::createServerTimer( "default", font_scale );
-	timer hud::setPoint( point, relative, x, y );
-	timer.sort = level.sort.timer;
-	timer.alpha = alpha;
-	timer.label = label;
-
-	if( isValidFloat( time ) || isValidInt( time ) )
-	{
-		timer SetTimer( time );	
-	}
-
-	return timer;
-}
-
-function CreateServerShader( alpha, shader, width, height, align, relative, x, y, color, team = undefined )
-{
-	server_shader = _CreateShader( "server",  alpha, shader, width, height, align, relative, x, y, color, team );
-
-	return server_shader;
-}
-
-function CreateShader( alpha, shader, width, height, align, relative, x, y, color )
-{	
-	client_shader = _CreateShader( "client", alpha, shader, width, height, align, relative, x, y, color );
-
-	return client_shader;
-}
-
-function _CreateShader( shader_type, alpha, shader, width, height, align, relative, x, y, color, team )
-{
-	if( CompareStrings( shader_type, "server", true ) )
-	{
-		if( isValidTeam( team ) )
-		{
-			_shader = NewTeamHudElem( team );
-		}
-		else
-		{
-			_shader = NewHudElem();
-		}
-	}
-	else
-	{
-		_shader = NewClientHudElem( self );
-	}
-
-	_shader.elemType = "bar";
-
-	if ( !level.splitScreen )
-	{
-		_shader.x = -2;
-		_shader.y = -2;
-	}
-
-	_shader.hidden = false;
-
-	_shader.color = color;
-	_shader.alpha = alpha;
-	_shader.sort = level.sort.shader;
-
-	_shader.width = width;
-	_shader.height = height;
-	
-	_shader.xOffset = 0;
-	_shader.yOffset = 0;
-
-	_shader.x = x;
-	_shader.y = y;
-	_shader.align = align;
-	_shader.relative = relative;
-	_shader hud::setPoint( align, relative, x, y );
-
-	_shader.children = [];	
-	_shader hud::setParent( level.uiParent );
-	
-	_shader setShader( shader, width ,height );	
-
-	return _shader;	
 }
