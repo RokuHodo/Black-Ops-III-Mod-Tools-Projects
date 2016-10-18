@@ -63,11 +63,50 @@ function PlaySoundOnHost( alias )
 
 /* -------------------------------------------------------------------------------------
 
-	Section:		Huds / Text
-	Description:	Functions that create / delete / manipulate all types of huds.
-					Also contains any functions that print text to the screen.				
+	Section:		Text
+	Description:	Functions the manipulate and handle strings.
 
 ------------------------------------------------------------------------------------- */
+
+function TextAfter( str, point )
+{
+	result = "";
+
+	if( !isValidString( str ) || !isValidString( point ) )
+	{
+		return result;
+	}
+
+	index = IndexOf( str, point );
+
+	if( index != -1 )
+	{
+		index += point.size;
+
+		result = GetSubStr( str, index );
+	}
+
+	return result; 
+}
+
+function TextBefore( str, point )
+{
+	result = "";
+
+	if( !isValidString( str ) || !isValidString( point ) )
+	{
+		return result;
+	}
+
+	index = IndexOf( str, point );
+
+	if( index != -1 )
+	{
+		result = GetSubStr( str, 0, index );
+	}
+
+	return result; 
+}
 
 function IndexOf( str, sub_str, start = 0 )
 {
@@ -158,6 +197,13 @@ function IndexOf( str, sub_str, start = 0 )
 
 	return _index;
 }
+
+/* -------------------------------------------------------------------------------------
+
+	Section:		Huds
+	Description:	Functions that create / delete / manipulate all types of huds.		
+
+------------------------------------------------------------------------------------- */
 
 function IPrintLnOnTeam( team, str )
 {
