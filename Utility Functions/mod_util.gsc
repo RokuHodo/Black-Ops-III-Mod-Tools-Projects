@@ -41,11 +41,123 @@ function isValidTeam( _team )
 
 /* -------------------------------------------------------------------------------------
 
+	Section:		Sound
+	Description:	Functions that amake working with sounds a bit easier.					
+
+------------------------------------------------------------------------------------- */
+
+function PlaySoundOnHost( alias )
+{
+	players  = GetPlayers();
+
+	foreach( player in players )
+	{
+		if( player IsHost() )
+		{
+			player PlaySound( alias );
+
+			break;
+		}
+	}
+}
+
+/* -------------------------------------------------------------------------------------
+
 	Section:		Huds / Text
 	Description:	Functions that create / delete / manipulate all types of huds.
 					Also contains any functions that print text to the screen.				
 
 ------------------------------------------------------------------------------------- */
+
+function IndexOf( str, sub_str, start = 0 )
+{
+	_index = -1;
+
+	//ony or both of the strings are null
+	if( !isValidString( str ) || !isValidString( sub_str ) )
+	{
+		IPrintLn( "^1The string and/or sub string is null" );
+
+		return _index;
+	}
+
+	//sub string doesn't exist in the string
+	if( !SearchString( str, sub_str, true ) )
+	{
+		IPrintLn( "^1The sub string (" + sub_str + ") does not exist in the string (" + str + ")" );
+
+		return _index;
+	}
+
+	if( start > str.size - 1 )
+	{
+		IPrintLn( "^1The starting index (" + start + ") is larger than the number of indices in the string (" + ( str.size - 1 ) + ")" );
+
+		return _index;
+	}
+
+	if( start + sub_str.size - 1 > str.size - 1 )
+	{
+		IPrintLn( "^1The ending index of the first sub string search (" + ( start + sub_str.size - 1 ) + ") would be out of bounds of the last index of the string (" + ( str.size - 1 ) + ")" );
+
+		return _index;
+	}	
+
+	if( sub_str.size == 1 )
+	{
+		for( index = start; index < str.size; index++ )
+		{
+			//the sub string is really a char, easy mode
+			if( sub_str.size == 1 )
+			{
+				if( CompareStrings( str[ index ], sub_str ) )
+				{
+					IPrintLn( "^2The character (" + sub_str + ") was found at index (" + index + ")" );
+
+					return index;
+				}
+			}
+		}
+	}
+	else
+	{
+		index_to_match = 0;
+		last_match_index = -1;
+
+		for( index = start; index < str.size; index++ )
+		{
+			if( CompareStrings( str[ index ], sub_str[ index_to_match ] ) )
+			{
+				//first time the match was found, or the very next character was also a match
+				if( last_match_index == -1 || index - last_match_index == 1 )
+				{
+					index_to_match++;
+					last_match_index = index;
+				}
+			}
+			else
+			{
+				//index compared did not match, reset
+				index_to_match = 0;
+				last_match_index = -1;
+			}
+
+			//all characters in the sub string were found, return the index
+			if( index_to_match == sub_str.size )
+			{
+				index -= ( sub_str.size - 1 );
+
+				IPrintLn( "^2The sub string (" + sub_str + ") was found at index (" + index + ")" );
+
+				return index;
+			}
+		}
+	}
+
+	IPrintLn( "^1Nothing was found" );
+
+	return _index;
+}
 
 function IPrintLnOnTeam( team, str )
 {
@@ -124,6 +236,7 @@ function CreateShader( alpha, shader, width, height, align, relative, x, y, colo
 
 function _CreateShader( shader_type, alpha, shader, width, height, align, relative, x, y, color, team )
 {
+
 	if( CompareStrings( shader_type, "server", true ) )
 	{
 		if( isValidTeam( team ) )
@@ -154,6 +267,12 @@ function _CreateShader( shader_type, alpha, shader, width, height, align, relati
 	_shader.alpha = alpha;
 	_shader.sort = level.sort.shader;
 
+	//make sure everything is an int because shaders hate floats for some reason
+	x = Int( x );
+	y = Int( y );
+	width = Int( width );
+	height = Int( height );	
+
 	_shader.width = width;
 	_shader.height = height;
 	
@@ -169,7 +288,7 @@ function _CreateShader( shader_type, alpha, shader, width, height, align, relati
 	_shader.children = [];	
 	_shader hud::setParent( level.uiParent );
 	
-	_shader setShader( shader, width ,height );	
+	_shader setShader( shader, width, height );	
 
 	return _shader;	
 }
