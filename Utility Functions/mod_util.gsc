@@ -10,7 +10,7 @@
 
 #insert scripts\shared\shared.gsh;
 
-#namespace util;
+#namespace quarantine_chaos;
 
 /* -------------------------------------------------------------------------------------
 
@@ -142,20 +142,17 @@ function IndexOf( str, sub_str, start = 0 )
 		return _index;
 	}	
 
+	//the sub string is really a char, easy mode
 	if( sub_str.size == 1 )
 	{
 		for( index = start; index < str.size; index++ )
 		{
-			//the sub string is really a char, easy mode
-			if( sub_str.size == 1 )
+			if( CompareStrings( str[ index ], sub_str ) )
 			{
-				if( CompareStrings( str[ index ], sub_str ) )
-				{
-					IPrintLn( "^2The character (" + sub_str + ") was found at index (" + index + ")" );
+				IPrintLn( "^2The character (" + sub_str + ") was found at index (" + index + ")" );
 
-					return index;
-				}
-			}
+				return index;
+			}				
 		}
 	}
 	else
