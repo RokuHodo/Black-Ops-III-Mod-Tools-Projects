@@ -10,7 +10,7 @@
 
 #insert scripts\shared\shared.gsh;
 
-#namespace quarantine_chaos;
+#namespace util;
 
 /* -------------------------------------------------------------------------------------
 
@@ -108,6 +108,51 @@ function TextBefore( str, point )
 	return result; 
 }
 
+function StartsWith( str, sub_str, ignore_case = false )
+{
+	result = false;
+
+	if( !isValidString( str ) || !isValidString( sub_str ) )
+	{
+		return result;
+	}
+
+	if( sub_str.size > str.size )
+	{
+		return result;
+	}
+
+	result = CompareStrings( GetSubStr( str, 0, sub_str.size ), sub_str, ignore_case );
+
+	return result;
+}
+
+function StartsWithVowel( str )
+{
+	if( !isValidString( str ) )
+	{
+		return false;
+	}
+
+	vowels = [];
+
+	ARRAY_ADD( vowels, "a" );
+	ARRAY_ADD( vowels, "e" );
+	ARRAY_ADD( vowels, "i" );
+	ARRAY_ADD( vowels, "o" );
+	ARRAY_ADD( vowels, "u" );
+
+	foreach( vowel in vowels )
+	{
+		if( StartsWith( str, vowel, true ) )
+		{
+			return true;
+		}
+	}
+
+	return false;
+}
+
 function IndexOf( str, sub_str, start = 0 )
 {
 	_index = -1;
@@ -115,7 +160,7 @@ function IndexOf( str, sub_str, start = 0 )
 	//ony or both of the strings are null
 	if( !isValidString( str ) || !isValidString( sub_str ) )
 	{
-		IPrintLn( "^1The string and/or sub string is null" );
+		//IPrintLn( "^1The string and/or sub string is null" );
 
 		return _index;
 	}
@@ -123,21 +168,21 @@ function IndexOf( str, sub_str, start = 0 )
 	//sub string doesn't exist in the string
 	if( !SearchString( str, sub_str, true ) )
 	{
-		IPrintLn( "^1The sub string (" + sub_str + ") does not exist in the string (" + str + ")" );
+		//IPrintLn( "^1The sub string (" + sub_str + ") does not exist in the string (" + str + ")" );
 
 		return _index;
 	}
 
 	if( start > str.size - 1 )
 	{
-		IPrintLn( "^1The starting index (" + start + ") is larger than the number of indices in the string (" + ( str.size - 1 ) + ")" );
+		//IPrintLn( "^1The starting index (" + start + ") is larger than the number of indices in the string (" + ( str.size - 1 ) + ")" );
 
 		return _index;
 	}
 
 	if( start + sub_str.size - 1 > str.size - 1 )
 	{
-		IPrintLn( "^1The ending index of the first sub string search (" + ( start + sub_str.size - 1 ) + ") would be out of bounds of the last index of the string (" + ( str.size - 1 ) + ")" );
+		//IPrintLn( "^1The ending index of the first sub string search (" + ( start + sub_str.size - 1 ) + ") would be out of bounds of the last index of the string (" + ( str.size - 1 ) + ")" );
 
 		return _index;
 	}	
@@ -149,7 +194,7 @@ function IndexOf( str, sub_str, start = 0 )
 		{
 			if( CompareStrings( str[ index ], sub_str ) )
 			{
-				IPrintLn( "^2The character (" + sub_str + ") was found at index (" + index + ")" );
+				//IPrintLn( "^2The character (" + sub_str + ") was found at index (" + index + ")" );
 
 				return index;
 			}				
@@ -183,14 +228,14 @@ function IndexOf( str, sub_str, start = 0 )
 			{
 				index -= ( sub_str.size - 1 );
 
-				IPrintLn( "^2The sub string (" + sub_str + ") was found at index (" + index + ")" );
+				//IPrintLn( "^2The sub string (" + sub_str + ") was found at index (" + index + ")" );
 
 				return index;
 			}
 		}
 	}
 
-	IPrintLn( "^1Nothing was found" );
+	//IPrintLn( "^1Nothing was found" );
 
 	return _index;
 }
@@ -582,6 +627,89 @@ function DestroyOnNotify( hud, notification )
 
 /* -------------------------------------------------------------------------------------
 
+	Section:		Buttons 
+	Description:	Wrappers for button logic
+
+------------------------------------------------------------------------------------- */
+
+function isButtonPressed( button )
+{
+	pressed = false;
+
+	switch( button )
+	{
+		case "+frag":
+		{
+			pressed = self FragButtonPressed();
+		}
+		break;
+
+		case "+melee":
+		{
+			pressed = self MeleeButtonPressed();
+		}
+		break;
+
+		case "+attack":
+		{
+			pressed = self AttackButtonPressed();
+		}
+		break;
+
+		case "+activate":
+		{
+			pressed = self UseButtonPressed();
+		}
+		break;
+
+		case "+speed_throw":
+		{
+			pressed = self AdsButtonPressed();
+		}
+		break;
+
+		case "+smoke":
+		{
+			pressed = self SecondaryOffhandButtonPressed();
+		}
+		break;
+
+		case "+actionslot 1":
+		{
+			pressed = self ActionSlotOneButtonPressed();
+		}
+		break;
+
+		case "+actionslot 2":
+		{
+			pressed = self ActionSlotTwoButtonPressed();
+		}
+		break;
+
+		case "+actionslot 3":
+		{
+			pressed = self ActionSlotThreeButtonPressed();
+		}
+		break;
+
+		case "+actionslot 4":
+		{
+			pressed = self ActionSlotFourButtonPressed();
+		}
+		break;
+
+		default:
+		{
+
+		}
+		break;
+	}
+
+	return pressed;
+}
+
+/* -------------------------------------------------------------------------------------
+
 	Section:		Universal / Miscellaneous 
 	Description:	These are "true" utility functions that can be applied to nearly anything.
 
@@ -663,14 +791,9 @@ function isValidArray( array )
 	return true;
 }
 
-function SearchString( str, sub_str, ignore_case )
+function SearchString( str, sub_str, ignore_case = false )
 {
 	valid = false;
-
-	if( !isdefined( ignore_case ) )
-	{
-		ignore_case = false;
-	}
 
 	if( !isValidString( str ) || !isValidString( sub_str ) )
 	{
@@ -689,14 +812,9 @@ function SearchString( str, sub_str, ignore_case )
 	return valid;
 }
 
-function CompareStrings( string_1, string_2, ignore_case )
+function CompareStrings( string_1, string_2, ignore_case = false )
 {
 	valid = false;
-
-	if( !isdefined( ignore_case ) )
-	{
-		ignore_case = false;
-	}
 
 	if( !isValidString( string_1 ) || !isValidString( string_2 ) )
 	{
@@ -722,19 +840,14 @@ function CompareStrings( string_1, string_2, ignore_case )
 
 ************************************************************************************* */
 
-function StringToarray( array, token )
+function StringToarray( str, token )
 {
-	if( !isdefined( array ) || !IsArray( array ) )
+	if( !isValidString( str ) || !isValidString( token ) )
 	{
 		return;
 	}
 
-	if( !isValidString( token ) )
-	{
-		return;
-	}
-
-	return StrTok( array, token );
+	return StrTok( str, token );
 }
 
 function GetArraySize( array )
@@ -745,4 +858,16 @@ function GetArraySize( array )
 	}
 
 	return array.size;
+}
+
+/* *************************************************************************************
+
+	Sub Section:	Misc
+	Description:	Everything else that doesn't have a home
+
+************************************************************************************* */
+
+function blank()
+{
+
 }
