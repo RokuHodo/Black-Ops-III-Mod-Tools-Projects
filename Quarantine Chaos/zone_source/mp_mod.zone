@@ -1,0 +1,29 @@
+>mode,mp
+>type,common
+
+#include "mp_mod.class"
+
+scriptparsetree,scripts/shared/mod_util.gsc
+
+scriptparsetree,scripts/mp/gametypes/quarantine_chaos.csc
+scriptparsetree,scripts/mp/gametypes/quarantine_chaos.gsc
+scriptparsetree,scripts/mp/gametypes/quarantine_chaos_dev.gsc
+scriptparsetree,scripts/mp/gametypes/quarantine_chaos_loadout.gsc
+scriptparsetree,scripts/mp/gametypes/quarantine_chaos_shop.gsc
+scriptparsetree,scripts/mp/gametypes/quarantine_chaos_shop_hud.gsc
+scriptparsetree,scripts/mp/gametypes/quarantine_chaos_shop_items.gsc
+
+rawfile,gamedata/gamesettings/mp/gamesettings_quarantine_chaos.cfg
+
+localize,qc
+
+rawfile,cp_mod.cfg
+rawfile,mp_mod.cfg
+rawfile,zm_mod.cfg
+rawfile,core_mod.cfg
+
+sound,mp_mod
+
+/*
++devmap mp_sector +set_gametype quarantine_chaos +developer 1 +bind k noclip
+*/

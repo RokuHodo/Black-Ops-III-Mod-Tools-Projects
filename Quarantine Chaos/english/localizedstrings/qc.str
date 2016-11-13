@@ -1,0 +1,65 @@
+VERSION				"1"
+CONFIG				"C:\projects\cod\t7\bin\StringEd.cfg"
+FILENOTES			""
+
+REFERENCE			GAME_MODE
+LANG_ENGLISH		"Quarantine Chaos"
+
+REFERENCE			HUMAN
+LANG_ENGLISH		"^5Human^7"
+
+REFERENCE			ZOMBIE
+LANG_ENGLISH		"^1Zombie^7"
+
+REFERENCE			TEAM_HUMANS
+LANG_ENGLISH		"^5Humans^7"
+
+REFERENCE			TEAM_ZOMBIES
+LANG_ENGLISH		"^1Zombies^7"
+
+REFERENCE			OBJECTIVES
+LANG_ENGLISH		"Inspired from he original Quarantine Chaos from Modern Warfare 2 and Infected from Modern Warfare 3, Quarantine Chaos for Black Ops III is a zombie based game mode for multiplayer. There are two teams, zombies and humans. An alpha zombie is randomly chosen and attempts to turn every human into a zombie while the humans fight for their life."
+
+REFERENCE			OBJECTIVES_HINT_HUMANS
+LANG_ENGLISH		"Survive Against the Undead Hoard"
+
+REFERENCE			OBJECTIVES_HINT_ZOMBIES
+LANG_ENGLISH		"Kill the Humans!"
+
+REFERENCE			OBJECTIVES_SCORE
+LANG_ENGLISH		"Earn cash for upgrades by killing the enemy."
+
+REFERENCE			OBJECTIVES_SCORE
+LANG_ENGLISH		"Earn cash for upgrades by killing the enemy."
+
+REFERENCE			WAITING_FOR_MORE_HUMANS
+LANG_ENGLISH		"^3Waiting for More Humans to Kill..."
+
+REFERENCE			ALPHA_ZOMBIE_COUNTDOWN
+LANG_ENGLISH		"^1Alpha Zombie Released in: ^7"
+
+REFERENCE			ALPHA_ZOMBIE_RELEASED
+LANG_ENGLISH		"^1Alpha Zombie Released!"
+
+REFERENCE			HUMANS_ELIMINATED
+LANG_ENGLISH		"Humans Eliminated"
+
+REFERENCE			ZOMBIES_ELIMINATED
+LANG_ENGLISH		"Zombies Eliminaated"
+
+REFERENCE			HUMANS_DESTROYED
+LANG_ENGLISH		"Humans Destroyed"
+
+REFERENCE			ZOMBIES_DESTROYED
+LANG_ENGLISH		"Zombies Destroyed"
+
+REFERENCE			CASH_AVAILABLE
+LANG_ENGLISH		"^5Cash Available^7: [^2$^7&&1]"
+
+REFERENCE			HEALTH
+LANG_ENGLISH		"^5Health^7: [&&1]"
+
+REFERENCE			SHOP_INSTRUCTIONS
+LANG_ENGLISH		"Press and hold ^3[{+activate}] ^7to select\nPress ^3[{+actionslot 1}]^7/^3[{+actionslot 2}] ^7to scroll up/down\nPress ^3[{+actionslot 4}]^7/^3[{+actionslot 3}] ^7to scroll left/right"
+
+ENDMARKER

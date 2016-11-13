@@ -1,0 +1,30 @@
+version,2535893,593
+ignore_missing_shipped,core_pre_gfx
+ignore_missing_shipped,core_pre_gfx
+ignore_missing_shipped,core_patch
+ignore_missing_shipped,core_patch
+ignore_missing_shipped,core_gfx
+ignore_missing_shipped,core_gfx
+ignore_missing_shipped,core_post_gfx
+ignore_missing_shipped,core_post_gfx
+ignore_missing_shipped,core_ui
+ignore_missing_shipped,core_ui
+ignore_missing_shipped,core_common
+ignore_missing_shipped,core_common
+ignore_missing_shipped,zm_common
+ignore_missing_shipped,zm_common
+ignore_missing_shipped,zm_patch
+ignore_missing_shipped,zm_patch
+texturecombo,zm_mod
+assetlist,zm_mod
+	file,D:\Steam\steamapps\common\Call of Duty Black Ops III\share\raw\gamedata\playeranim\playeranimtypes.txt,1475300286,
+	file,D:\Steam\steamapps\common\Call of Duty Black Ops III\mods\mp_quarantine_chaos\zone_source\loc\zm_mod.zone,1478471981,bf49859e,29dcef59,6803f5f7,9782df93
+	file,D:\Steam\steamapps\common\Call of Duty Black Ops III\zone_source\english\assetlist\core_pre_gfx.csv,1475336646,4f38c8d2,54dbe0ad,a26fe6dd,7ce6fe27
+	file,D:\Steam\steamapps\common\Call of Duty Black Ops III\zone_source\english\assetlist\core_patch.csv,1475336642,0a7b10d4,ec037139,b775bcfd,cff55759
+	file,D:\Steam\steamapps\common\Call of Duty Black Ops III\zone_source\english\assetlist\core_gfx.csv,1475336618,4cd6243d,831296e2,f2d7c4d8,2e2c9159
+	file,D:\Steam\steamapps\common\Call of Duty Black Ops III\zone_source\english\assetlist\core_post_gfx.csv,1475336592,6421ae92,8670936d,28c8f4d3,3c4bb4af
+	file,D:\Steam\steamapps\common\Call of Duty Black Ops III\zone_source\english\assetlist\core_ui.csv,1475336645,ce3b1916,c358e78d,81b61779,aaf68da4
+	file,D:\Steam\steamapps\common\Call of Duty Black Ops III\zone_source\english\assetlist\core_common.csv,1475336568,f20cb3c9,3de99f86,c87e9541,bddfab95
+	file,D:\Steam\steamapps\common\Call of Duty Black Ops III\zone_source\english\assetlist\zm_common.csv,1475336568,4764b9bb,fb3a876b,3442808c,89244d35
+	file,D:\Steam\steamapps\common\Call of Duty Black Ops III\zone_source\english\assetlist\zm_patch.csv,1475336626,251e32d9,6d7cd895,06e06a77,cf58ce0a
+errorcount,0

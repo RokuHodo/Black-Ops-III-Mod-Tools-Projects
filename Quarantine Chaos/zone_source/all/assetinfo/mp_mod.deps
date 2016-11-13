@@ -1,0 +1,101 @@
+version,2535893,593
+ignore_missing_shipped,core_pre_gfx
+ignore_missing_shipped,core_patch
+ignore_missing_shipped,core_gfx
+ignore_missing_shipped,core_post_gfx
+ignore_missing_shipped,core_ui
+ignore_missing_shipped,core_common
+ignore_missing_shipped,mp_common
+ignore_missing_shipped,mp_patch
+scriptparsetree,scripts/shared/mod_util.gsc
+	file,D:\Steam\steamapps\common\Call of Duty Black Ops III\mods\mp_quarantine_chaos\scripts\shared\mod_util.gsc,1479008462,
+	file,D:\Steam\steamapps\common\Call of Duty Black Ops III\share\raw\scripts\shared\abilities\_ability_util.gsh,1475300304,
+	file,D:\Steam\steamapps\common\Call of Duty Black Ops III\share\raw\scripts\shared\shared.gsh,1475300292,
+	file,D:\Steam\steamapps\common\Call of Duty Black Ops III\share\raw\scripts\shared\statstable_shared.gsh,1475300293,
+scriptparsetree,scripts/mp/gametypes/quarantine_chaos.csc
+	file,D:\Steam\steamapps\common\Call of Duty Black Ops III\mods\mp_quarantine_chaos\scripts\mp\gametypes\quarantine_chaos.csc,1477504084,
+	file,D:\Steam\steamapps\common\Call of Duty Black Ops III\share\raw\scripts\shared\shared.gsh,1475300292,
+scriptparsetree,scripts/mp/gametypes/quarantine_chaos.gsc
+	file,D:\Steam\steamapps\common\Call of Duty Black Ops III\mods\mp_quarantine_chaos\scripts\mp\gametypes\quarantine_chaos.gsc,1479005445,
+	file,D:\Steam\steamapps\common\Call of Duty Black Ops III\share\raw\scripts\shared\shared.gsh,1475300292,
+scriptparsetree,scripts/mp/gametypes/quarantine_chaos_dev.gsc
+	file,D:\Steam\steamapps\common\Call of Duty Black Ops III\mods\mp_quarantine_chaos\scripts\mp\gametypes\quarantine_chaos_dev.gsc,1478397962,
+	file,D:\Steam\steamapps\common\Call of Duty Black Ops III\share\raw\scripts\shared\shared.gsh,1475300292,
+scriptparsetree,scripts/mp/gametypes/quarantine_chaos_loadout.gsc
+	file,D:\Steam\steamapps\common\Call of Duty Black Ops III\mods\mp_quarantine_chaos\scripts\mp\gametypes\quarantine_chaos_loadout.gsc,1478828507,
+	file,D:\Steam\steamapps\common\Call of Duty Black Ops III\share\raw\scripts\shared\shared.gsh,1475300292,
+	file,D:\Steam\steamapps\common\Call of Duty Black Ops III\share\raw\scripts\shared\statstable_shared.gsh,1475300293,
+scriptparsetree,scripts/mp/gametypes/quarantine_chaos_shop.gsc
+	file,D:\Steam\steamapps\common\Call of Duty Black Ops III\mods\mp_quarantine_chaos\scripts\mp\gametypes\quarantine_chaos_shop.gsc,1478992922,
+	file,D:\Steam\steamapps\common\Call of Duty Black Ops III\share\raw\scripts\shared\shared.gsh,1475300292,
+scriptparsetree,scripts/mp/gametypes/quarantine_chaos_shop_hud.gsc
+	file,D:\Steam\steamapps\common\Call of Duty Black Ops III\mods\mp_quarantine_chaos\scripts\mp\gametypes\quarantine_chaos_shop_hud.gsc,1478999005,
+	file,D:\Steam\steamapps\common\Call of Duty Black Ops III\share\raw\scripts\shared\shared.gsh,1475300292,
+scriptparsetree,scripts/mp/gametypes/quarantine_chaos_shop_items.gsc
+	file,D:\Steam\steamapps\common\Call of Duty Black Ops III\mods\mp_quarantine_chaos\scripts\mp\gametypes\quarantine_chaos_shop_items.gsc,1478997893,
+	file,D:\Steam\steamapps\common\Call of Duty Black Ops III\share\raw\scripts\shared\shared.gsh,1475300292,
+	file,D:\Steam\steamapps\common\Call of Duty Black Ops III\share\raw\scripts\shared\abilities\_ability_util.gsh,1475300304,
+rawfile,gamedata/gamesettings/mp/gamesettings_quarantine_chaos.cfg
+	file,D:\Steam\steamapps\common\Call of Duty Black Ops III\mods\mp_quarantine_chaos\gamedata\gamesettings\mp\gamesettings_quarantine_chaos.cfg,1478125016,
+localize,qc
+	file,D:\Steam\steamapps\common\Call of Duty Black Ops III\mods\mp_quarantine_chaos\english\localizedstrings\qc.str,1478992206,
+rawfile,cp_mod.cfg
+	file,D:\Steam\steamapps\common\Call of Duty Black Ops III\mods\mp_quarantine_chaos\cp_mod.cfg,1475424297,
+rawfile,mp_mod.cfg
+	file,D:\Steam\steamapps\common\Call of Duty Black Ops III\mods\mp_quarantine_chaos\mp_mod.cfg,1478398256,
+rawfile,zm_mod.cfg
+	file,D:\Steam\steamapps\common\Call of Duty Black Ops III\mods\mp_quarantine_chaos\zm_mod.cfg,1475424297,
+rawfile,core_mod.cfg
+	file,D:\Steam\steamapps\common\Call of Duty Black Ops III\mods\mp_quarantine_chaos\core_mod.cfg,1475424297,
+sound,mp_mod,all
+texturecombo,mp_mod
+assetlist,mp_mod
+	file,D:\Steam\steamapps\common\Call of Duty Black Ops III\share\raw\gamedata\playeranim\playeranimtypes.txt,1475300286,
+	file,D:\Steam\steamapps\common\Call of Duty Black Ops III\mods\mp_quarantine_chaos\zone_source\mp_mod.zone,1478040577,244b4f51,bbd3e4da,732fa1eb,dd50273f
+	file,D:\Steam\steamapps\common\Call of Duty Black Ops III\share\zone_source\mp_mod.class,1475300306,
+	file,D:\Steam\steamapps\common\Call of Duty Black Ops III\share\zone_source\mod_default.class,1475300295,
+	file,D:\Steam\steamapps\common\Call of Duty Black Ops III\share\zone_source\default.class,1475300294,
+	file,D:\Steam\steamapps\common\Call of Duty Black Ops III\share\zone_source\base_patch.zpkg,1476730630,72bccc68,8fb51814,02c56a96,ceeed121
+	file,D:\Steam\steamapps\common\Call of Duty Black Ops III\zone_source\all\assetlist\core_pre_gfx.csv,1475300264,9a291896,f3713a9b,75a0b66e,703a40af
+	file,D:\Steam\steamapps\common\Call of Duty Black Ops III\zone_source\all\assetlist\core_patch.csv,1475300095,e2750e65,9fac07ed,ee7f9d23,db2d368f
+	file,D:\Steam\steamapps\common\Call of Duty Black Ops III\zone_source\all\assetlist\core_gfx.csv,1475300101,cd4bd55e,5a76c130,1bc59b74,2b562aae
+	file,D:\Steam\steamapps\common\Call of Duty Black Ops III\zone_source\all\assetlist\core_post_gfx.csv,1475300149,f17c255a,80bc11bb,25edc8e6,77c37831
+	file,D:\Steam\steamapps\common\Call of Duty Black Ops III\zone_source\all\assetlist\core_ui.csv,1475300101,4084980a,41180258,b9f63bf0,88cc6cda
+	file,D:\Steam\steamapps\common\Call of Duty Black Ops III\zone_source\all\assetlist\core_common.csv,1475300217,df45de4a,59b3a475,2b1eed12,383c9210
+	file,D:\Steam\steamapps\common\Call of Duty Black Ops III\zone_source\all\assetlist\mp_common.csv,1475300217,4e730694,795da7e5,fa259fd5,48c38bea
+	file,D:\Steam\steamapps\common\Call of Duty Black Ops III\zone_source\all\assetlist\mp_patch.csv,1475300218,8ed59bcb,12d15b30,0aa40012,24adc7d9
+	file,D:\Steam\steamapps\common\Call of Duty Black Ops III\share\raw\sound\active_build.cfg,1475300339,
+	file,D:\Steam\steamapps\common\Call of Duty Black Ops III\share\raw\sound\globals\volume_group.csv,1475300294,
+	file,D:\Steam\steamapps\common\Call of Duty Black Ops III\share\raw\sound\globals\curve.csv,1475300172,
+	file,D:\Steam\steamapps\common\Call of Duty Black Ops III\share\raw\sound\globals\pan.csv,1475300340,
+	file,D:\Steam\steamapps\common\Call of Duty Black Ops III\share\raw\sound\globals\duck_group.csv,1475300385,
+	file,D:\Steam\steamapps\common\Call of Duty Black Ops III\share\raw\sound\contexts\aquifer_cockpit.ctx,1475300172,
+	file,D:\Steam\steamapps\common\Call of Duty Black Ops III\share\raw\sound\contexts\battle.ctx,1475300294,
+	file,D:\Steam\steamapps\common\Call of Duty Black Ops III\share\raw\sound\contexts\boot.ctx,1475300171,
+	file,D:\Steam\steamapps\common\Call of Duty Black Ops III\share\raw\sound\contexts\foley.ctx,1475300171,
+	file,D:\Steam\steamapps\common\Call of Duty Black Ops III\share\raw\sound\contexts\healthstate.ctx,1475300420,
+	file,D:\Steam\steamapps\common\Call of Duty Black Ops III\share\raw\sound\contexts\igc.ctx,1475300304,
+	file,D:\Steam\steamapps\common\Call of Duty Black Ops III\share\raw\sound\contexts\laststand.ctx,1475300304,
+	file,D:\Steam\steamapps\common\Call of Duty Black Ops III\share\raw\sound\contexts\mature.ctx,1475300385,
+	file,D:\Steam\steamapps\common\Call of Duty Black Ops III\share\raw\sound\contexts\movement.ctx,1475300339,
+	file,D:\Steam\steamapps\common\Call of Duty Black Ops III\share\raw\sound\contexts\perspective.ctx,1475300294,
+	file,D:\Steam\steamapps\common\Call of Duty Black Ops III\share\raw\sound\contexts\plr_body.ctx,1475300340,
+	file,D:\Steam\steamapps\common\Call of Duty Black Ops III\share\raw\sound\contexts\plr_gender.ctx,1475300420,
+	file,D:\Steam\steamapps\common\Call of Duty Black Ops III\share\raw\sound\contexts\plr_impact.ctx,1475300385,
+	file,D:\Steam\steamapps\common\Call of Duty Black Ops III\share\raw\sound\contexts\plr_stance.ctx,1475300340,
+	file,D:\Steam\steamapps\common\Call of Duty Black Ops III\share\raw\sound\contexts\plr_vehicle.ctx,1475300294,
+	file,D:\Steam\steamapps\common\Call of Duty Black Ops III\share\raw\sound\contexts\ringoff_plr.ctx,1475300340,
+	file,D:\Steam\steamapps\common\Call of Duty Black Ops III\share\raw\sound\contexts\train.ctx,1475300172,
+	file,D:\Steam\steamapps\common\Call of Duty Black Ops III\share\raw\sound\contexts\vehicle.ctx,1475300385,
+	file,D:\Steam\steamapps\common\Call of Duty Black Ops III\share\raw\sound\contexts\water.ctx,1475300385,
+	file,D:\Steam\steamapps\common\Call of Duty Black Ops III\share\raw\sound\globals\master.csv,1475300305,
+	file,D:\Steam\steamapps\common\Call of Duty Black Ops III\share\raw\sound\globals\futz.csv,1475300172,
+	file,D:\Steam\steamapps\common\Call of Duty Black Ops III\mods\mp_quarantine_chaos\sound\zone\mp_mod.all.alias.sz,1479008481,
+	file,D:\Steam\steamapps\common\Call of Duty Black Ops III\mods\mp_quarantine_chaos\sound\zone\mp_mod.all.reverb.sz,1479008481,
+	file,D:\Steam\steamapps\common\Call of Duty Black Ops III\mods\mp_quarantine_chaos\sound\zone\mp_mod.all.ducklist.sz,1479008481,
+	file,D:\Steam\steamapps\common\Call of Duty Black Ops III\mods\mp_quarantine_chaos\sound\zone\mp_mod.all.musiclist.sz,1479008481,
+	file,D:\Steam\steamapps\common\Call of Duty Black Ops III\mods\mp_quarantine_chaos\sound\zone\mp_mod.all.scriptid.sz,1479008481,
+	file,D:\Steam\steamapps\common\Call of Duty Black Ops III\mods\mp_quarantine_chaos\sound\zone\mp_mod.all.ambient.sz,1479008481,
+	spawn,expect,core_all
+	spawn,expect,mp_common_all
+errorcount,0
