@@ -1,16 +1,89 @@
+//native files
 #using scripts\codescripts\struct;
 
-#using scripts\shared\math_shared;
-#using scripts\shared\util_shared;
 #using scripts\shared\array_shared;
+#using scripts\shared\hud_message_shared;
 #using scripts\shared\hud_util_shared;
+#using scripts\shared\math_shared;
 #using scripts\shared\system_shared;
+#using scripts\shared\util_shared;
 
 #using scripts\mp\_util;
+#insert scripts\shared\abilities\_ability_util.gsh;
 
 #insert scripts\shared\shared.gsh;
+#insert scripts\shared\statstable_shared.gsh;
 
 #namespace util;
+
+#define ATTACHMENT_TABLE "gamedata/weapons/common/attachmentTable.csv"
+
+/* -------------------------------------------------------------------------------------
+
+	Section:		Threading
+	Description:	Functions that aid in anything team based.					
+
+------------------------------------------------------------------------------------- */
+
+function ThreadOnNotify( flag, func, parameter_1 = undefined,  parameter_2 = undefined, parameter_2 = undefined, parameter_3 = undefined, parameter_4 = undefined, parameter_5 = undefined, parameter_6 = undefined, parameter_7 = undefined, parameter_8 = undefined, parameter_9 = undefined,  parameter_10 = undefined )
+{
+	if( !isValidString( flag ) )	
+	{
+		return;
+	}
+
+	if( !isValidFunction( func ) )
+	{
+		return;
+	}
+
+	self waittill( flag );
+
+	if( isdefined( parameter_10 ) )
+	{
+		self thread [[ func ]]( parameter_1,  parameter_2, parameter_2, parameter_3, parameter_4, parameter_5, parameter_6, parameter_7, parameter_8, parameter_9,  parameter_10 );
+	}
+	else if( isdefined( parameter_9 ) )
+	{
+		self thread [[ func ]]( parameter_1,  parameter_2, parameter_2, parameter_3, parameter_4, parameter_5, parameter_6, parameter_7, parameter_8, parameter_9 );
+	}
+	else if( isdefined( parameter_8 ) )
+	{
+		self thread [[ func ]]( parameter_1,  parameter_2, parameter_2, parameter_3, parameter_4, parameter_5, parameter_6, parameter_7, parameter_8 );
+	}
+	else if( isdefined( parameter_7 ) )
+	{
+		self thread [[ func ]]( parameter_1,  parameter_2, parameter_2, parameter_3, parameter_4, parameter_5, parameter_6, parameter_7 );
+	}
+	else if( isdefined( parameter_6 ) )
+	{
+		self thread [[ func ]]( parameter_1,  parameter_2, parameter_2, parameter_3, parameter_4, parameter_5, parameter_6 );
+	}
+	else if( isdefined( parameter_5 ) )
+	{
+		self thread [[ func ]]( parameter_1,  parameter_2, parameter_2, parameter_3, parameter_4, parameter_5 );
+	}
+	else if( isdefined( parameter_4 ) )
+	{
+		self thread [[ func ]]( parameter_1,  parameter_2, parameter_2, parameter_3, parameter_4 );
+	}
+	else if( isdefined( parameter_3 ) )
+	{
+		self thread [[ func ]]( parameter_1,  parameter_2, parameter_2, parameter_3);	
+	}
+	else if( isdefined( parameter_2 ) )
+	{
+		self thread [[ func ]]( parameter_1,  parameter_2, parameter_2 );
+	}
+	else if( isdefined( parameter_1 ) )
+	{
+		self thread [[ func ]]( parameter_1,  parameter_2 );
+	}
+	else
+	{
+		self thread [[ func ]]();
+	}
+}
 
 /* -------------------------------------------------------------------------------------
 
@@ -33,10 +106,55 @@ function isValidTeam( _team )
 		if( CompareStrings( _team, team, true ) )
 		{
 			valid = true;
+
+			return valid;
 		}
 	}
 
 	return valid;
+}
+
+/* -------------------------------------------------------------------------------------
+
+	Section:		Dvars 
+	Description:	Wrappers that add more flexibility to Dvars
+
+------------------------------------------------------------------------------------- */
+
+function ChangeDvarOverTime( dvar, value, time )
+{
+	if( !isValidString( dvar ) )
+	{
+		return;
+	}
+
+	if( !StrIsNumber( value ) || !StrIsNumber( time ) )
+	{
+		return;
+	}
+
+	value_current = GetDvarFloat( dvar );
+
+	//update once per server frame
+	cycles = Int( time / 0.05 );
+	increment = ( value - value_current ) / cycles;
+
+	for( index = 0; index < cycles; index++ )
+	{
+		value_current += increment;
+		SetDvar( dvar, value_current );
+
+		IPrintLn( dvar + " set to  " + GetDvarFloat( dvar ) );
+
+		WAIT_SERVER_FRAME;
+	}
+
+	if( GetDvarFloat( dvar ) != value )
+	{
+		SetDvar( dvar, value );
+	}
+
+	IPrintLn( dvar + " set to  " + GetDvarFloat( dvar ) );
 }
 
 /* -------------------------------------------------------------------------------------
@@ -48,6 +166,11 @@ function isValidTeam( _team )
 
 function PlaySoundOnHost( alias )
 {
+	if( !isValidString( alias ) )
+	{
+		return;
+	}
+
 	players  = GetPlayers();
 
 	foreach( player in players )
@@ -59,6 +182,18 @@ function PlaySoundOnHost( alias )
 			break;
 		}
 	}
+}
+
+function PlaySoundOnNotify( alias, flag )
+{
+	if( !isValidString( alias ) || !isValidString( flag ) )
+	{
+		return;
+	}
+
+	self waittill( flag );
+
+	PlaySoundOnHost( alias );
 }
 
 /* -------------------------------------------------------------------------------------
@@ -129,9 +264,11 @@ function StartsWith( str, sub_str, ignore_case = false )
 
 function StartsWithVowel( str )
 {
+	result = false;
+
 	if( !isValidString( str ) )
 	{
-		return false;
+		return result;
 	}
 
 	vowels = [];
@@ -146,11 +283,13 @@ function StartsWithVowel( str )
 	{
 		if( StartsWith( str, vowel, true ) )
 		{
-			return true;
+			result = true;
+
+			return result;
 		}
 	}
 
-	return false;
+	return result;
 }
 
 function IndexOf( str, sub_str, start = 0 )
@@ -243,9 +382,20 @@ function IndexOf( str, sub_str, start = 0 )
 /* -------------------------------------------------------------------------------------
 
 	Section:		Huds
-	Description:	Functions that create / delete / manipulate all types of huds.		
+	Description:	Functions that draw, delete, manipulatem and return data on huds.
+
+	Subsections		1) Drawing
+					2) Deleting
+					3) Get/Sets
 
 ------------------------------------------------------------------------------------- */
+
+/* *************************************************************************************
+
+	Subsection:		Drawing
+	Description:	Draws various different types of huds
+
+************************************************************************************* */
 
 function IPrintLnOnTeam( team, str )
 {
@@ -277,22 +427,55 @@ function IPrintLnBoldOnTeam( team, str )
 	}
 }
 
-function CreateString( alpha, fontscale, point, relative, x, y, text )
+function PlayServerMessage( team = undefined, title, sub_text_1 = undefined, sub_text_2 = undefined, icon = undefined, glow_color = undefined, duration = 7, sound = undefined )
 {
-	hud_string = hud::createFontString( "default", fontscale );
-	hud_string hud::setPoint( point, relative, x, y );
-	hud_string.sort = level.sort.string;
-	hud_string.alpha = alpha;
+	players = GetPlayers();
 
-	if( isValidString( text ) )
+	foreach( player in players )
 	{
-		hud_string SetText( text );	
-	}	
-
-	return hud_string;
+		if( !isValidTeam( team ) || ( isValidTeam( team ) && CompareStrings( player.pers[ "team" ], team ) ) )
+		{
+			player thread PlayMessage( title, sub_text_1, sub_text_2, icon, glow_color, duration, sound );
+		}
+	}
 }
 
-function CreateServerTimer( alpha, font_scale, point, relative, x, y, time, label = "" )
+function PlayMessage( title, sub_text_1 = undefined, sub_text_2 = undefined, icon = undefined, glow_color = undefined, duration = 7, sound = undefined )
+{ 
+	message = SpawnStruct();
+
+	message.titleText = title;
+	message.notifyText = sub_text_1;
+	message.notifyText2 = sub_text_2;
+	message.iconName = icon;
+	message.glowColor = glow_color;
+	message.duration = duration;
+	message.sound = sound;
+
+	hud_message::notifyMessage( message );
+}
+
+function CreateDisplay( alpha = 1.0, fontscale = 1.0, point = "CENTER", relative = "CENTER", x = 0, y = 0, value = undefined, label = "" )
+{
+	display = hud::createFontString( "default", fontscale );
+	display hud::setPoint( point, relative, x, y );
+	display.sort = level.sort.string;
+	display.alpha = alpha;
+	display.label = label;
+
+	if( isValidInt( value ) || isValidFloat( value ) )
+	{
+		display SetValue( value );
+	}
+	else if( isValidString( MakeLocalizedString( value ) ) )
+	{
+		display SetText( value );
+	}	
+
+	return display;
+}
+
+function CreateServerTimer( alpha = 0, font_scale = 1.0, point = "CENTER", relative = "CENTER", x = 0, y = 0, time = 0.0, label = "" )
 {
 	timer = hud::createServerTimer( "default", font_scale );
 	timer hud::setPoint( point, relative, x, y );
@@ -308,14 +491,103 @@ function CreateServerTimer( alpha, font_scale, point, relative, x, y, time, labe
 	return timer;
 }
 
-function CreateServerShader( alpha, shader, width, height, align, relative, x, y, color, team = undefined )
+class ServerWaypoint
+{
+	var icon;
+	var team;
+
+	var waypoint;
+
+	constructor()
+	{
+		icon = "";
+		team = "";
+
+		waypoint = undefined;
+	}	
+
+	destructor()
+	{
+
+	}
+
+	function SetIcon( _icon )
+	{
+		icon = _icon;
+	}
+
+	function SetVisibleTeam( _team )
+	{
+		team = _team;
+	}
+
+	function DrawWaypoint( origin )
+	{
+		if( !util::isValidString( icon ) )
+		{
+			return;
+		}
+
+		waypoint = undefined;
+
+		if( util::isValidTeam( team ) )
+		{
+			waypoint = NewTeamHudElem( team );
+		}
+		else
+		{
+			waypoint = NewHudElem();	
+		}
+
+		waypoint.x = origin[ 0 ];
+		waypoint.y = origin[ 1 ];
+		waypoint.z = origin[ 2 ];
+
+		waypoint SetShader( icon );
+		waypoint SetWayPoint( true, icon );
+
+		level thread util::DestroyOnNotify( waypoint, "game_ended" );
+	}
+
+	function FollowEntity( ent )
+	{
+		level endon( "game_ended" );
+
+		if( !isdefined( waypoint ) || !IsEntity( ent ) )
+		{
+			return;
+		}
+
+		//doesn't work :(
+		//point = Spawn( "script_origin", ent.origin );
+		//point EnableLinkTo();
+
+		//waypoint LinkTo( point );
+
+		while( true )
+		{
+			//doesn't seem to do anything
+			//waypoint MoveOverTime( 0.05 );
+
+			waypoint.x = ent.origin[ 0 ];
+			waypoint.y = ent.origin[ 1 ];
+			waypoint.z = ent.origin[ 2 ] + 70;
+
+			WAIT_CLIENT_FRAME;
+		}
+	}
+}
+
+
+
+function CreateServerShader( alpha = 1.0, shader = "white", width = 0, height = 0, align = "CENTER", relative = "CENTER", x = 0, y = 0, color = ( 1, 1, 1 ), team = "" )
 {
 	server_shader = _CreateShader( "server",  alpha, shader, width, height, align, relative, x, y, color, team );
 
 	return server_shader;
 }
 
-function CreateShader( alpha, shader, width, height, align, relative, x, y, color )
+function CreateShader( alpha = 1.0, shader = "white", width = 0, height = 0, align = "CENTER", relative = "CENTER", x = 0, y = 0, color = ( 1, 1, 1 ) )
 {	
 	client_shader = _CreateShader( "client", alpha, shader, width, height, align, relative, x, y, color );
 
@@ -324,6 +596,7 @@ function CreateShader( alpha, shader, width, height, align, relative, x, y, colo
 
 function _CreateShader( shader_type, alpha, shader, width, height, align, relative, x, y, color, team )
 {
+	_shader = undefined;
 
 	if( CompareStrings( shader_type, "server", true ) )
 	{
@@ -395,7 +668,7 @@ class PausableTimer
 	var timer;					//timer object
 	var background;				//bg shader object
 
-	var time_left;
+	var notifies;
 
 	constructor()
 	{
@@ -403,12 +676,12 @@ class PausableTimer
 		started = false;
 		running = false;
 
+		notifies = [];
+
 		time_data = SpawnStruct();
 		time_data.left = 0;
 		time_data.stop = 0;
 		time_data.start = 0;
-
-		time_left = 0;
 
 		hud_offset = SpawnStruct();
 		background_widths = SpawnStruct();
@@ -471,22 +744,45 @@ class PausableTimer
 
 		prop = properties[ "timer" ];
 
-		timer = quarantine_chaos::CreateServerTimer( prop.alpha, prop.font_scale, prop.point, prop.relative, prop.x, prop.y, undefined, GetLabel() );
+		timer = util::CreateServerTimer( prop.alpha, prop.font_scale, prop.point, prop.relative, prop.x, prop.y, undefined, GetLabel() );
 
 		//bg can be destroyed either when it "refreshes" or time expires
-		self thread quarantine_chaos::DestroyOnNotify( timer, "destroy_pausable_all" );
-		self thread quarantine_chaos::DestroyOnNotify( timer, "destroy_pausable_timer" );
+		self thread util::DestroyOnNotify( timer, "destroy_pausable_all" );
+		self thread util::DestroyOnNotify( timer, "destroy_pausable_timer" );
+	}
+
+	function AddNotify( flag, time, obj = undefined )
+	{
+		if( !util::isValidString( flag ) )
+		{
+			return;
+		}
+
+		if( !StrIsNumber( time ) )
+		{
+			return;
+		}
+
+		element = SpawnStruct();
+		element.time = time;
+		element.flag = flag;
+		element.obj = obj;
+
+		if( !array::contains( notifies, element ) )
+		{
+			ARRAY_ADD( notifies, element );			
+		}
 	}
 
 	function CreateBackground()
 	{
 		prop = properties[ "background" ];
 
-		background = quarantine_chaos::CreateServerShader( prop.alpha, prop.shader, GetBackgroundWidth(), prop.height, prop.point, prop.relative, prop.x, prop.y, prop.color );
+		background = util::CreateServerShader( prop.alpha, prop.shader, GetBackgroundWidth(), prop.height, prop.point, prop.relative, prop.x, prop.y, prop.color );
 
 		//bg can be destroyed either manualls with "destroy_pausable_background" or when time expires
-		self thread quarantine_chaos::DestroyOnNotify( background, "destroy_pausable_all" );
-		self thread quarantine_chaos::DestroyOnNotify( background, "destroy_pausable_background" );	
+		self thread util::DestroyOnNotify( background, "destroy_pausable_all" );
+		self thread util::DestroyOnNotify( background, "destroy_pausable_background" );	
 	}
 
 	function private GetLabel()
@@ -544,7 +840,7 @@ class PausableTimer
 		//"refresh" the hud
 		//needs to be re-drawn because only setting the label leaves the actual timer portion on screen
 		self CreateTimer();
-	}	
+	}
 
 	function private MonitorTimerDestroy()
 	{
@@ -563,6 +859,8 @@ class PausableTimer
 				time_left = time_data.left - ( Abs( GetTime() - time_data.start ) / 1000 );
 			}
 
+			thread RunNotifies( time_left );
+
 			WAIT_SERVER_FRAME;
 		}
 		while( time_left > 0 );
@@ -576,11 +874,46 @@ class PausableTimer
 		self notify( "destroy_pausable_all" );
 
 		level notify( "countdown_complete" );
+	}	
+
+	function RunNotifies( time )
+	{
+		if( util::GetArraySize( notifies ) == 0 )
+		{
+			return;
+		}
+
+		foreach( index, element in notifies )
+		{
+			//<= just in case if it's a server frame or two off 
+			if( time <= element.time )
+			{
+				if( isdefined( element.obj ) )
+				{
+					element.obj notify( element.flag );
+				}
+				else
+				{
+					self notify( element.flag );
+				}
+
+				ArrayRemoveValue( notifies, element );
+			}	
+		}
 	}
 }
 
-function DestroyOnNotify_Array( huds, notification, keys_ignore )
+/* *************************************************************************************
+
+	Subsection:		Destroys
+	Description:	Handles destroying the huds.
+
+************************************************************************************* */
+
+function DestroyOnNotify_Array( huds, notification, keys_ignore = undefined )
 {
+	self endon( "disconnect" );
+
 	if( !isdefined( huds ) || !isValidString( notification ) )
 	{
 		return;
@@ -625,6 +958,30 @@ function DestroyOnNotify( hud, notification )
 	hud Destroy();
 }
 
+/* *************************************************************************************
+
+	Subsection:		Get/Sets
+	Description:	Gets or sets hud properties 
+
+************************************************************************************* */
+
+function GetFontHeight()
+{
+	return level.fontHeight;
+}
+
+function GetTextHeight( font_scale = 1.0 )
+{
+	font_height = GetFontHeight();
+
+	if( isValidFloat( font_scale ) )
+	{
+		return font_scale * font_height;
+	}
+
+	return font_height;
+}
+
 /* -------------------------------------------------------------------------------------
 
 	Section:		Buttons 
@@ -656,7 +1013,8 @@ function isButtonPressed( button )
 		}
 		break;
 
-		case "+activate":
+		case "+use":
+		case "+activate":		
 		{
 			pressed = self UseButtonPressed();
 		}
@@ -710,11 +1068,293 @@ function isButtonPressed( button )
 
 /* -------------------------------------------------------------------------------------
 
+	Section:		Weapons
+	Description:	Wrappers and other useful functions for getting weapon information
+
+	Subsections:	1) Boolean Checks
+					2) Weapon handling
+					3) Get/Sets
+
+------------------------------------------------------------------------------------- */
+
+/* *************************************************************************************
+
+	Subsection:		Boolean Checks
+	Description:	Various weapon checks.
+
+************************************************************************************* */
+
+function isValidWeapon( weapon )
+{
+	if( !isdefined( weapon ) )
+	{
+		return false;
+	}
+
+	if( weapon == level.weaponNone )
+	{
+		return false;
+	}
+
+	if( !weapon.isValid )
+	{
+		return false;
+	}
+
+	if( CompareStrings( weapon.name, "weapon_none", true ) )
+	{
+		return false;
+	}
+
+	return true;
+}
+
+function HasMaxAmmo( weapon )
+{
+	result = false;
+
+	if( !isValidWeapon( weapon ) )
+	{
+		return result;
+	}
+
+	//need to aslo check the ammo clip because GetFractionMaxcAmmo doesn't update until you reload
+	if( self GetFractionMaxAmmo( weapon ) == 1 && self GetWeaponAmmoClip( weapon ) == weapon.clipSize )
+	{
+		result = true;
+	}
+
+	return result;
+}
+
+function HasHeroWeapon()
+{
+	weapons = self GetWeaponsList( true );
+
+	foreach( weapon in weapons )
+	{
+		if( weapon.isheroweapon || weapon.gadget_type == GADGET_TYPE_HERO_WEAPON )
+		{
+			return true;
+		}
+	}
+
+	return false;
+}
+
+function GetHeroWeapon()
+{
+	hero_weapon = level.weaponNone;
+
+	weapons = self GetWeaponsList( true );
+
+	foreach( weapon in weapons )
+	{
+		if( weapon.isheroweapon || weapon.gadget_type == GADGET_TYPE_HERO_WEAPON )
+		{
+			hero_weapon = weapon;
+
+			return hero_weapon;
+		}
+	}
+
+	return hero_weapon;
+}
+
+/* *************************************************************************************
+
+	Subsection:		Weapon handling
+	Description:	Change and handle a players weapon lists.
+
+************************************************************************************* */
+
+function SwapWeaponsHeld( weapon_take, weapon_give, give_ammo = false )
+{
+	if( !isValidWeapon( weapon_take ) || !isValidWeapon( weapon_give ) )
+	{
+		return;
+	}
+
+	if( !self HasWeapon( weapon_take ) )
+	{
+		return;
+	}
+
+	self TakeWeapon( weapon_take );
+	self GiveWeapon( weapon_give );
+
+	if( give_ammo )
+	{
+		self GiveMaxAmmo( weapon_give );
+	}
+}
+
+/* *************************************************************************************
+
+	Subsection:		Get / Sets
+	Description:	Returns various weapon data information.
+
+************************************************************************************* */
+
+function GetBaseWeapon( weapon )
+{
+	weapon_base = "";
+
+	if( !isValidWeapon( weapon ) )
+	{
+		return weapon_base;
+	}
+
+	weapon_base = [[ level.get_base_weapon_param ]]( weapon );
+
+	return weapon_base;
+}
+
+//i realize there is a GetWeaponOptic() function but I can't get it to work
+function GetOpticOnWeapon( weapon )
+{
+	optic = "";
+
+	if( !isValidWeapon( weapon ) )
+	{
+		return optic;
+	}
+
+	attachments = weapon.attachments;
+
+	foreach( attachment in attachments )
+	{
+		group = GetAttachmentGroup( attachment );
+
+		if( util::CompareStrings( group, "optic", true ) )
+		{
+			optic = attachment;
+
+			return optic;
+		}
+	}
+
+	return optic;
+}
+
+function GetAttachmentGroup( attachment )
+{
+	group = "";
+
+	if( !isValidString( attachment ) )
+	{
+		return group;
+	}
+
+	row = TableLookupRowNum( ATTACHMENT_TABLE, STATS_TABLE_COL_REFERENCE, attachment );
+
+	group = TableLookupColumnForRow( ATTACHMENT_TABLE, row, STATS_TABLE_COL_GROUP );
+
+	return group;
+}
+
+function GetLocalizedWeaponName( weapon )
+{
+	name = "";
+
+	if( !isValidWeapon( weapon ) )
+	{
+		return;
+	}
+
+	name = MakeLocalizedString( weapon.displayname );
+
+	return name;
+}
+
+function GetLocalizedAttachmentName( attachment )
+{
+	name = "";
+
+	if( !isValidString( attachment ) )
+	{
+		return name;
+	}
+
+	row = TableLookupRowNum( ATTACHMENT_TABLE, STATS_TABLE_COL_REFERENCE, attachment );
+	
+	name = MakeLocalizedString( TableLookupColumnForRow( ATTACHMENT_TABLE, row, STATS_TABLE_COL_NAME ) );
+
+	return name;
+}
+
+//TODO: find a way to get the names of weapon classes by using tables
+function GetWeaponClassName( weapon_class )
+{
+	name = "";
+
+	if( !isValidString( weapon_class ) )
+	{
+		return name;
+	}
+
+	switch( weapon_class )
+	{
+		case "weapon_smg":
+		{
+			name = "submachine gun";
+		}
+		break;
+
+		case "weapon_cqb":
+		{
+			name = "shotgun";
+		}
+		break;
+
+		case "weapon_assault":
+		{
+			name = "assault rifle";
+		}
+		break;
+
+		case "weapon_lmg":
+		{
+			name = "light machine gun";
+		}
+		break;
+
+		case "weapon_special":
+		{
+			name = "special weapon";
+		}
+		break;
+
+		case "weapon_knife":
+		case "weapon_pistol":
+		case "weapon_sniper":
+		case "weapon_grenade":
+		case "weapon_shotgun":
+		case "weapon_launcher":
+		case "weapon_explosive":
+		{
+			name = TextAfter( weapon_class, "_" );
+		}
+		break;
+
+		default:
+		{
+			name = "another weapon";
+		}
+		break;
+	}
+
+	return name;
+}
+
+/* -------------------------------------------------------------------------------------
+
 	Section:		Universal / Miscellaneous 
 	Description:	These are "true" utility functions that can be applied to nearly anything.
 
 	Sub Sections:	1) Boolean Checks
 					2) Arrays
+					3) Misc
 
 ------------------------------------------------------------------------------------- */
 
@@ -725,6 +1365,21 @@ function isButtonPressed( button )
 	Description:	Perform comparison / validation checks.
 
 ************************************************************************************* */
+
+function isValidFunction( func )
+{
+	if( !isdefined( func ) )
+	{
+		return false;
+	}
+
+	if( !IsFunctionPtr( func ) )
+	{
+		return false;
+	}
+
+	return true;
+}
 
 function isValidInt( number )
 {
@@ -862,12 +1517,12 @@ function GetArraySize( array )
 
 /* *************************************************************************************
 
-	Sub Section:	Misc
-	Description:	Everything else that doesn't have a home
+	Subsection:		Misc
+	Description:	Everything else that doesn't have a home.
 
 ************************************************************************************* */
 
-function blank()
+function blank( parameter_1, parameter_2, parameter_3, parameter_4, parameter_5, parameter_6, parameter_7, parameter_8, parameter_9, parameter_10 )
 {
 
 }
