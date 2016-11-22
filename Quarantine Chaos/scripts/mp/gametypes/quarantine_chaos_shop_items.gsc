@@ -24,7 +24,16 @@
 /* -------------------------------------------------------------------------------------
 
 	Section:		Shop Item Functions
-	Description:	The magic that makes the shop work
+	Description:	The magic that makes the shop work.
+
+	Notes:			The structure of each shop function should follow this order
+
+					1) Perform all necessary checks
+					2) Perform the action					
+					3) Update the element in the shop
+					4) Update the cash
+					5) Refresh the menu if necessary
+					6) Run callbacks if necessary
 
 ------------------------------------------------------------------------------------- */
 
@@ -44,7 +53,7 @@ function PurchaseWeapon( team, cost, element, state, weapon )
 		return;
 	}
 
-	//build the struct so it can be properly added to the starting loadout 
+	//build the struct so it can be added to the starting loadout 
 	weapon_struct = SpawnStruct();
 	weapon_struct.name = weapon_name_localized;
 	weapon_struct.reference = weapon.name;
@@ -55,7 +64,7 @@ function PurchaseWeapon( team, cost, element, state, weapon )
 
 	if( weapons::is_primary_weapon( weapon ) || weapons::is_side_arm( weapon ) )
 	{
-		//can't swap the weapons because it's being added on
+		//don't swap the weapons because it's only 0being added
 		self GiveMaxAmmo( weapon );
 		self SwitchToWeapon( weapon );
 		self SetSpawnWeapon( weapon );
@@ -81,32 +90,49 @@ function PurchaseWeapon( team, cost, element, state, weapon )
 		return;
 	}
 
-	//update the hsop
 	element.bought = true;
 	element.available = false;
 	[[ self.shop_system[ team ] ]]->SetOption( element.parent, element.index_parent, element.index_option, element );
 
-	[[ self.shop_system[ team ] ]]->Callback( "shop_weapon_purchased" );
+	PurchaseSuccess( Highlight( weapon_name_localized ) + " purchased", cost );
 
 	RefreshShop_Safe_Single( team, element, state );
 
-	PurchaseSuccess( Highlight( weapon_name_localized ) + " purchased", cost );
+	[[ self.shop_system[ team ] ]]->Callback( "shop_weapon_purchased" );
 }
 
-function PurchasePerk( team, cost, element, state, perks )
+function PurchasePerk( team, cost, element, state, perk_struct )
 {
-	foreach( perk in perks.references )
+	perk_given = false;
+
+	foreach( reference in perk_struct.references )
 	{
-		self SetPerk( perk );
+		if( self HasPerk( reference ) )
+		{
+			continue;
+		}
+
+		self SetPerk( reference );
+
+		perk_given = true;
 	}
+
+	if( !perk_given )
+	{
+		self IPrintLn( Highlight( perk_struct.name ) + " already purchased" );
+
+		return;
+	}
+
+	loadout::AddLoadoutItem( team, "perk", perk_struct );	
 
 	//update the option so it cannot be bought again
 	element.bought = true;
 	[[ self.shop_system[ team ] ]]->SetOption( element.parent, element.index_parent, element.index_option, element );
 
+	PurchaseSuccess( Highlight( perk_struct.name ) + " purchased", cost );
+	
 	RefreshShop_Safe_Single( team, element, state );
-
-	PurchaseSuccess( Highlight( perk.name ) + " purchased", cost );
 }
 
 function PurchaseMaxHealth( team, cost, element, state, increment )
@@ -117,7 +143,7 @@ function PurchaseMaxHealth( team, cost, element, state, increment )
 	}
 
 	max_health = quarantine_chaos::GetMaxHealth();
-	max_health_limit = quarantine_chaos::GetMaxHealthLimit( team );
+	max_health_limit = quarantine_chaos::GetTeamMaxHealth( team );
 
 	if( max_health >= max_health_limit )
 	{
@@ -216,9 +242,9 @@ function PurchaseUpgrade( team, cost, element, state, type_starter, type_upgrade
 		display_unavailable = attachment.name + " unavailable";
 		display_swap = "Swap current optic for " +  attachment.name;
 
-		[[ self.shop_system[ team ] ]]->AddOption_GunDependent( parent, weapon_upgrade_struct.weapon, &PurchaseAttachment, 500, weapon_upgrade_struct.reference, attachment );	
+		[[ self.shop_system[ team ] ]]->AddOption_GunDependent( parent, weapon_upgrade_struct.weapon, &PurchaseAttachment, 500, weapon_upgrade_struct.reference, attachment );
 		[[ self.shop_system[ team ] ]]->AddDisplayChoices( parent, display_purchase, display_bought, display_unavailable, display_swap );
-		[[ self.shop_system[ team ] ]]->AddCallback( parent, "shop_weapon_change_complete", &ShopCallback_AttachmentUpgrade, self );		
+		[[ self.shop_system[ team ] ]]->AddCallback( parent, "shop_weapon_change_complete", &ShopCallback_AttachmentUpgrade, self );
 	}
 
 	self util::SwapWeaponsHeld( weapon_current, weapon_upgrade_struct.weapon, true );
@@ -260,7 +286,7 @@ function PurchaseAttachment( team, cost, element, state, reference, attachment )
 	{		
 		optic_swapped_name = util::GetLocalizedAttachmentName( optic_current_reference );
 
-		ArrayRemoveValue( attachments, optic_current_reference );		
+		ArrayRemoveValue( attachments, optic_current_reference );
 	}
 	//no optic is present, the gun already has the max allowed attachments
 	else if( attachments_held >= max_attachments_allowed )
@@ -277,7 +303,7 @@ function PurchaseAttachment( team, cost, element, state, reference, attachment )
 	self util::SwapWeaponsHeld( weapon_current, weapon_give, true );
 	self loadout::EditLoadoutWeapon( weapon_give );	
 
-	element.bought = true;	
+	element.bought = true;
 	element.available = false;
 
 	if( util::CompareStrings( attachment.group, "optic" ) )
@@ -386,11 +412,11 @@ function PurchaseSuccess( str, cost = undefined )
 	{
 		if( util::isValidInt( cost ) )
 		{
-			self IPrintLn( str + " ^7for ^2$^7" + cost );			
+			self IPrintLn( str + " ^7for ^2$^7" + cost );
 		}
 		else
 		{
-			self IPrintLn( str );	
+			self IPrintLn( str );
 		}
 	}
 }

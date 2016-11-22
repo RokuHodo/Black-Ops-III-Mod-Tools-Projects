@@ -1,0 +1,59 @@
+version,2535893,593
+ignore_missing_shipped,core_pre_gfx
+ignore_missing_shipped,core_pre_gfx
+ignore_missing_shipped,core_patch
+ignore_missing_shipped,core_patch
+ignore_missing_shipped,core_gfx
+ignore_missing_shipped,core_gfx
+ignore_missing_shipped,core_post_gfx
+ignore_missing_shipped,core_post_gfx
+ignore_missing_shipped,core_ui
+ignore_missing_shipped,core_ui
+ignore_missing_shipped,core_common
+ignore_missing_shipped,core_common
+ignore_missing_shipped,mp_common
+ignore_missing_shipped,mp_common
+ignore_missing_shipped,mp_patch
+ignore_missing_shipped,mp_patch
+localize,qc
+sound,mp_mod,traditionalchinese
+texturecombo,mp_mod
+assetlist,mp_mod
+	file,D:\Steam\steamapps\common\Call of Duty Black Ops III\share\raw\gamedata\playeranim\playeranimtypes.txt,1475300286,
+	file,D:\Steam\steamapps\common\Call of Duty Black Ops III\mods\mp_quarantine_chaos\zone_source\loc\mp_mod.zone,1479754175,e0e96ea0,4bf14166,f81fdbc9,79b70f89
+	file,D:\Steam\steamapps\common\Call of Duty Black Ops III\zone_source\traditionalchinese\assetlist\core_pre_gfx.csv,1475336646,4f38c8d2,54dbe0ad,a26fe6dd,7ce6fe27
+	file,D:\Steam\steamapps\common\Call of Duty Black Ops III\zone_source\traditionalchinese\assetlist\core_patch.csv,1475336642,02e172f9,16317974,943fdb57,1b65a9a4
+	file,D:\Steam\steamapps\common\Call of Duty Black Ops III\zone_source\traditionalchinese\assetlist\core_gfx.csv,1475336618,4cd6243d,831296e2,f2d7c4d8,2e2c9159
+	file,D:\Steam\steamapps\common\Call of Duty Black Ops III\zone_source\traditionalchinese\assetlist\core_post_gfx.csv,1475336626,84cba858,ca582e11,0ecc058e,9dc718da
+	file,D:\Steam\steamapps\common\Call of Duty Black Ops III\zone_source\traditionalchinese\assetlist\core_ui.csv,1475336642,01204c23,9c4fe4b0,62b426bd,ba245684
+	file,D:\Steam\steamapps\common\Call of Duty Black Ops III\zone_source\traditionalchinese\assetlist\core_common.csv,1475336568,f20cb3c9,3de99f86,c87e9541,bddfab95
+	file,D:\Steam\steamapps\common\Call of Duty Black Ops III\zone_source\traditionalchinese\assetlist\mp_common.csv,1475336568,5a20d4b2,6c6ecac0,175a01bd,7bec137a
+	file,D:\Steam\steamapps\common\Call of Duty Black Ops III\zone_source\traditionalchinese\assetlist\mp_patch.csv,1475336618,44577e5e,4d276489,bacbdd7c,2cfd716f
+	file,D:\Steam\steamapps\common\Call of Duty Black Ops III\share\raw\sound\active_build.cfg,1475300339,
+	file,D:\Steam\steamapps\common\Call of Duty Black Ops III\share\raw\sound\globals\volume_group.csv,1475300294,
+	file,D:\Steam\steamapps\common\Call of Duty Black Ops III\share\raw\sound\globals\curve.csv,1475300172,
+	file,D:\Steam\steamapps\common\Call of Duty Black Ops III\share\raw\sound\globals\pan.csv,1475300340,
+	file,D:\Steam\steamapps\common\Call of Duty Black Ops III\share\raw\sound\globals\duck_group.csv,1475300385,
+	file,D:\Steam\steamapps\common\Call of Duty Black Ops III\share\raw\sound\contexts\aquifer_cockpit.ctx,1475300172,
+	file,D:\Steam\steamapps\common\Call of Duty Black Ops III\share\raw\sound\contexts\battle.ctx,1475300294,
+	file,D:\Steam\steamapps\common\Call of Duty Black Ops III\share\raw\sound\contexts\boot.ctx,1475300171,
+	file,D:\Steam\steamapps\common\Call of Duty Black Ops III\share\raw\sound\contexts\foley.ctx,1475300171,
+	file,D:\Steam\steamapps\common\Call of Duty Black Ops III\share\raw\sound\contexts\healthstate.ctx,1475300420,
+	file,D:\Steam\steamapps\common\Call of Duty Black Ops III\share\raw\sound\contexts\igc.ctx,1475300304,
+	file,D:\Steam\steamapps\common\Call of Duty Black Ops III\share\raw\sound\contexts\laststand.ctx,1475300304,
+	file,D:\Steam\steamapps\common\Call of Duty Black Ops III\share\raw\sound\contexts\mature.ctx,1475300385,
+	file,D:\Steam\steamapps\common\Call of Duty Black Ops III\share\raw\sound\contexts\movement.ctx,1475300339,
+	file,D:\Steam\steamapps\common\Call of Duty Black Ops III\share\raw\sound\contexts\perspective.ctx,1475300294,
+	file,D:\Steam\steamapps\common\Call of Duty Black Ops III\share\raw\sound\contexts\plr_body.ctx,1475300340,
+	file,D:\Steam\steamapps\common\Call of Duty Black Ops III\share\raw\sound\contexts\plr_gender.ctx,1475300420,
+	file,D:\Steam\steamapps\common\Call of Duty Black Ops III\share\raw\sound\contexts\plr_impact.ctx,1475300385,
+	file,D:\Steam\steamapps\common\Call of Duty Black Ops III\share\raw\sound\contexts\plr_stance.ctx,1475300340,
+	file,D:\Steam\steamapps\common\Call of Duty Black Ops III\share\raw\sound\contexts\plr_vehicle.ctx,1475300294,
+	file,D:\Steam\steamapps\common\Call of Duty Black Ops III\share\raw\sound\contexts\ringoff_plr.ctx,1475300340,
+	file,D:\Steam\steamapps\common\Call of Duty Black Ops III\share\raw\sound\contexts\train.ctx,1475300172,
+	file,D:\Steam\steamapps\common\Call of Duty Black Ops III\share\raw\sound\contexts\vehicle.ctx,1475300385,
+	file,D:\Steam\steamapps\common\Call of Duty Black Ops III\share\raw\sound\contexts\water.ctx,1475300385,
+	file,D:\Steam\steamapps\common\Call of Duty Black Ops III\share\raw\sound\globals\master.csv,1475300305,
+	file,D:\Steam\steamapps\common\Call of Duty Black Ops III\share\raw\sound\globals\futz.csv,1475300172,
+	file,D:\Steam\steamapps\common\Call of Duty Black Ops III\mods\mp_quarantine_chaos\traditionalchinese\sound\zone\mp_mod.traditionalchinese.alias.sz,1479754198,
+errorcount,1

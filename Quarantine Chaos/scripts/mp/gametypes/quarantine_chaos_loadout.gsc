@@ -26,7 +26,7 @@ function BuildWeapons()
 	if( util::isValidArray( level.weapons_available ) )
 	{
 		return;
-	}	
+	}
 
 	SetUpgradePath( "axis", "weapon_knife", "none" );
 
@@ -46,25 +46,20 @@ function BuildWeapons()
 	for( index = 0; index < STATS_TABLE_MAX_ITEMS; index++ )
 	{
 		row = TableLookupRowNum( level.statsTableID, STATS_TABLE_COL_NUMBERING, index );
-		
+
 		if ( row < 0 )
 		{
 			continue;
 		}
 
 		weapon_type = TableLookupColumnForRow( level.statsTableID, row, STATS_TABLE_COL_GROUP );
-		
+
 		//only care about actual weapons
 		if ( util::StartsWith( weapon_type, "weapon_" ) || util::StartsWith( weapon_type, "hero" ) )
 		{
-			reference = TableLookupColumnForRow( level.statsTableID, row, STATS_TABLE_COL_REFERENCE );				
+			reference = TableLookupColumnForRow( level.statsTableID, row, STATS_TABLE_COL_REFERENCE );
 
 			//check to see if it's a valid weapon
-			if( !util::isValidString( reference ) )
-			{
-				continue;
-			}
-
 			weapon = GetWeapon( reference );
 
 			if( !util::isValidWeapon( weapon ) )
@@ -75,28 +70,28 @@ function BuildWeapons()
 			//if the weapon type hasn't been found yet, create a new array
 			if( !util::isValidArray( weapons[ weapon_type ] ) )
 			{
-				weapons[ weapon_type ] = [];			
+				weapons[ weapon_type ] = [];
 			}
 
-			weapon_index = weapons[ weapon_type ].size;
+			element = SpawnStruct();
 
-			//get the name and reference to the gun
-			weapons[ weapon_type ][ weapon_index ] = SpawnStruct();
-			weapons[ weapon_type ][ weapon_index ].name = MakeLocalizedString( TableLookupColumnForRow( level.statsTableID, row, STATS_TABLE_COL_NAME ) );
-			weapons[ weapon_type ][ weapon_index ].reference = reference;
-			weapons[ weapon_type ][ weapon_index ].type = weapon_type;
-			weapons[ weapon_type ][ weapon_index ].weapon = weapon;
-
-			attachments = util::StringToarray( TableLookupColumnForRow( level.statsTableID, row, STATS_TABLE_COL_ATTACHMENTS ), " " );
+			element.name = MakeLocalizedString( TableLookupColumnForRow( level.statsTableID, row, STATS_TABLE_COL_NAME ) );
+			element.reference = reference;
+			element.type = weapon_type;
+			element.weapon = weapon;
 
 			//get all possible attachments for the gun
-			weapons[ weapon_type ][ weapon_index ].attachments = [];
-			weapons[ weapon_type ][ weapon_index ].attachments = BuildAttachmentData( attachments );
+			attachments = util::StringToarray( TableLookupColumnForRow( level.statsTableID, row, STATS_TABLE_COL_ATTACHMENTS ), " " );
+
+			element.attachments = [];
+			element.attachments = BuildAttachmentData( attachments );
+
+			ARRAY_ADD( weapons[ weapon_type ], element );
 		}
-	}	
+	}
 
 	level.weapons_available[ "axis" ] = BuildWeaponsForTeam( "axis", weapons );
-	level.weapons_available[ "allies" ] = BuildWeaponsForTeam( "allies", weapons );	
+	level.weapons_available[ "allies" ] = BuildWeaponsForTeam( "allies", weapons );
 }
 
 function BuildAttachmentData( attachments )
@@ -111,6 +106,7 @@ function BuildAttachmentData( attachments )
 	foreach( attachment in attachments )
 	{
 		temp = SpawnStruct();
+		
 		temp.reference = attachment;
 		temp.name = util::GetLocalizedAttachmentName( attachment );
 		temp.group = util::GetAttachmentGroup( attachment );
@@ -123,7 +119,7 @@ function BuildAttachmentData( attachments )
 
 function BuildBlackList_Weapons()
 {
-	level.blacklist_weapons = [];	
+	level.blacklist_weapons = [];
 
 	//blacklisted weapons for zombies
 	level.blacklist_weapons[ "axis" ] = [];
@@ -134,7 +130,7 @@ function BuildBlackList_Weapons()
 	level.blacklist_weapons[ "allies" ] = [];
 	level.blacklist_weapons[ "allies" ][ "weapon_pistol" ] = Array( "pistol_standard_dw", "pistol_fullauto_dw", "pistol_burst_dw", "pistol_shotgun_dw", "pistol_energy", "weapon_null" );
 	level.blacklist_weapons[ "allies" ][ "weapon_smg" ] = Array( "" );
-	level.blacklist_weapons[ "allies" ][ "weapon_cqb" ] = Array( "shotgun_energy" );	
+	level.blacklist_weapons[ "allies" ][ "weapon_cqb" ] = Array( "shotgun_energy" );
 }
 
 function GetBlackList_Weapons( team )
@@ -158,7 +154,7 @@ function GetBlackList_Weapons( team )
 
 function BuildBlackList_Attachments()
 {
-	level.blacklist_attachments = [];	
+	level.blacklist_attachments = [];
 
 	level.blacklist_attachments = ARRAY( "dw", "gmod0", "gmod1", "gmod2", "gmod3", "gmod4", "gmod5", "gmod6", "gmod7", "dualclip", "dynzoom", "gl", "is", "mms", "notracer", "stackfire" );
 }
@@ -193,7 +189,7 @@ function BuildWeaponsForTeam( team, weapons_master )
 		return weapons;
 	}
 
-	blacklist_weapons = [];	
+	blacklist_weapons = [];
 	blacklist_weapons = GetBlackList_Weapons( team );
 
 	types_starter = GetStarterTypes( team );
@@ -203,14 +199,13 @@ function BuildWeaponsForTeam( team, weapons_master )
 		//starter weapons
 		if( !util::isValidArray( weapons[ "starter" ][ type_starter ] ) )
 		{
-			weapons[ "starter" ][ type_starter ] = [];	
+			weapons[ "starter" ][ type_starter ] = [];
 		}
-
 
 		if( !util::isValidArray( weapons_master[ type_starter ] ) )
 		{
 			continue;
-		}		
+		}
 
 		weapons[ "starter" ][ type_starter ] = AddWeapons( team, type_starter, weapons_master, blacklist_weapons[ type_starter ] );
 
@@ -219,7 +214,7 @@ function BuildWeaponsForTeam( team, weapons_master )
 
 		if( !util::isValidArray( weapons[ "upgrade" ][ type_upgrade ] ) )
 		{
-			weapons[ "upgrade" ][ type_upgrade ] = [];	
+			weapons[ "upgrade" ][ type_upgrade ] = [];
 		}
 
 		if( !util::isValidArray( weapons_master[ type_upgrade ] ) )
@@ -236,21 +231,6 @@ function BuildWeaponsForTeam( team, weapons_master )
 function AddWeapons( team, type, weapons_master, blacklist_weapons )
 {	
 	weapons = [];
-
-	if( !util::isValidTeam( team ) )
-	{
-		return weapons;
-	}
-
-	if( !util::isValidString( type ) )
-	{
-		return weapons;
-	}
-
-	if( !util::isValidArray( weapons_master ) || !util::isValidArray( weapons_master[ type ] ) )
-	{
-		return weapons;
-	}
 
 	foreach( weapon in weapons_master[ type ] )
 	{
@@ -461,23 +441,25 @@ function BuildPerks()
 
 		if ( util::CompareStrings( group, "specialty", true ) )
 		{
-			reference = TableLookupColumnForRow( level.statsTableID, row, STATS_TABLE_COL_REFERENCE );				
+			reference = TableLookupColumnForRow( level.statsTableID, row, STATS_TABLE_COL_REFERENCE );
 
 			//check to see if it's a valid perk
 			if( !util::isValidString( reference ) )
 			{
 				continue;
 			}
-			
-			perk_index = util::GetArraySize( perks );
 
-			//get the name and reference to the gun
-			perks[ perk_index ] = SpawnStruct();
-			perks[ perk_index ].name = MakeLocalizedString( TableLookupColumnForRow( level.statsTableID, row, STATS_TABLE_COL_NAME ) );
-			perks[ perk_index ].references = util::StringToarray( reference, "|" );
-			perks[ perk_index ].icon = TableLookupColumnForRow( level.statsTableID, row, STATS_TABLE_COL_IMAGE );
+			perk = SpawnStruct();
+
+			perk.name = MakeLocalizedString( TableLookupColumnForRow( level.statsTableID, row, STATS_TABLE_COL_NAME ) );
+			perk.icon = TableLookupColumnForRow( level.statsTableID, row, STATS_TABLE_COL_IMAGE );
+
+			perk.references = [];
+			perk.references = util::StringToarray( reference, "|" );
+
+			ARRAY_ADD( perks, perk );
 		}
-	}	
+	}
 
 	level.perks_available[ "axis" ] = BuildPerksForTeam( "axis", perks );
 	level.perks_available[ "allies" ] = BuildPerksForTeam( "allies", perks );
@@ -529,7 +511,7 @@ function BuildPerksForTeam( team, perks_master )
 		{
 			//black list by name for perks because multiple perks have multiple sub-perk references
 			if( array::contains( blacklist_perks, perk.name ) )
-			{				
+			{
 				continue;
 			}
 		}
@@ -562,7 +544,7 @@ function GetAvailablePerks( team )
 /* -------------------------------------------------------------------------------------
 
 	Section:		Loadouts
-	Description:	Functions that handle starting loadouts for zombies and humans.					
+	Description:	Functions that handle starting loadouts for zombies and humans.
 
 ------------------------------------------------------------------------------------- */
 
@@ -588,19 +570,14 @@ function AddLoadoutItem( team, key, item )
 		self.loadout_starting = [];
 	}
 
-	if( !util::isValidTeam( team ) )
-	{
-		return;
-	}
-
 	if( !util::isValidArray( self.loadout_starting[ team ] ) )
 	{
-		self.loadout_starting[ team ] = [];	
+		self.loadout_starting[ team ] = [];
 	}
 
 	if( !util::isValidArray( self.loadout_starting[ team ][ key ] ) )
 	{
-		self.loadout_starting[ team ][ key ] = [];	
+		self.loadout_starting[ team ][ key ] = [];
 	}
 
 	ARRAY_ADD( self.loadout_starting[ team ][ key ], item );
@@ -647,7 +624,7 @@ function GenerateStartingLoadout( team )
 	{
 		weapon_struct = array::random( weapons[ type ] );
 
-		AddLoadoutItem( team, "guns", weapon_struct );		
+		AddLoadoutItem( team, "guns", weapon_struct );
 	}
 }
 
@@ -670,7 +647,6 @@ function GetStartingLoadout( team )
 	return loadout_starting;
 }
 
-//this will need to be modified for zombies if they buy things like hatchets, the ripper, etc
 function GiveStartingLoadout()
 {
 	team = self.pers[ "team" ];
@@ -705,29 +681,46 @@ function GiveLoadoutItem( key, loadout )
 
 		case "equipment":
 		{
-			foreach( equipment in loadout )
+			foreach( equipment_struct in loadout )
 			{
-				self GiveWeapon( equipment.weapon );
+				self GiveWeapon( equipment_struct.weapon );
 
-				clip_size = ( isdefined( equipment.clip_size ) && util::isValidInt( equipment.clip_size ) && equipment.clip_size > 0 ? equipment.clip_size : equipment.weapon.clipSize );
-				self SetWeaponAmmoClip( equipment.weapon, clip_size );				
+				clip_size = util::ClampValue_Inclusive( equipment_struct.clip_size, 1, equipment_struct.weapon.clipSize );
+				self SetWeaponAmmoClip( equipment_struct.weapon, clip_size );
 			}
 		}
 		break;
 
 		case "gadget":
 		{
-			foreach( gadget in loadout )
+			foreach( gadget_struct in loadout )
 			{
-				self GiveWeapon( gadget.weapon );				
-				self GadgetPowerChange( 0, 100 );				
+				self GiveWeapon( gadget_struct.weapon );
+				self GadgetPowerChange( 0, 100 );
+			}
+		}
+		break;
+
+		case "perk":
+		{
+			foreach( perk_struct in loadout )
+			{
+				foreach( reference in perk_struct.references )
+				{
+					if( self HasPerk( reference ) )
+					{
+						continue;
+					}
+
+					self SetPerk( reference );
+				}
 			}
 		}
 		break;
 
 		default:
 		{
-			
+
 		}
 		break;
 	}	

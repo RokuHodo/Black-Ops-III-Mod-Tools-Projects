@@ -31,7 +31,7 @@ function BuildShops()
 {
 	self.shop_system = [];
 
-	// ============================ 
+	// ============================
 	//			Zombie Shop			
 	// ============================
 
@@ -50,7 +50,7 @@ function BuildShops()
 	display_purchase = "Purchase " + weapon_name_localized;
 	display_bought = weapon_name_localized + " already purchased";
 	[[ self.shop_system[ team ] ]]->AddOption( parent, &PurchaseWeapon, 750, weapon );
-	[[ self.shop_system[ team ] ]]->AddDisplayChoices( parent, display_purchase, display_bought );	
+	[[ self.shop_system[ team ] ]]->AddDisplayChoices( parent, display_purchase, display_bought );
 
 	//ripper
 	weapon = GetWeapon( "hero_armblade" );
@@ -63,7 +63,7 @@ function BuildShops()
 
 	//PERK MENU
 	parent = "perks";
-	[[ self.shop_system[ team ] ]]->AddParent( parent );	
+	[[ self.shop_system[ team ] ]]->AddParent( parent );
 
 	perks = loadout::GetAvailablePerks( team );
 	foreach( perk in perks )
@@ -77,7 +77,7 @@ function BuildShops()
 
 	//MISC MENU
 	parent = "misc";
-	[[ self.shop_system[ team ] ]]->AddParent( parent );	
+	[[ self.shop_system[ team ] ]]->AddParent( parent );
 
 	[[ self.shop_system[ team ] ]]->AddOption( parent, &PurchaseMaxHealth, 600, 25 );
 	[[ self.shop_system[ team ] ]]->AddDisplayChoices( parent, "Increase max health", undefined, "Max health limit reached" );
@@ -110,7 +110,7 @@ function BuildShops()
 		foreach( weapon_struct in loadout::GetStartingLoadout( team )[ "guns" ] )
 		{
 			type_starter = weapon_struct.type;
-			type_upgrade = loadout::GetUpgradeType( team, type_starter );		
+			type_upgrade = loadout::GetUpgradeType( team, type_starter );
 			type_upgrade_name = util::GetWeaponClassName( type_upgrade );
 
 			preposition = ( util::StartsWithVowel( type_upgrade_name ) ? "an" : "a" );
@@ -120,7 +120,7 @@ function BuildShops()
 			display_unavailable = "Current weapon cannot be exchanged";
 
 			[[ self.shop_system[ team ] ]]->AddOption_GunDependent( parent, weapon_struct.weapon, &PurchaseUpgrade, 750, type_starter, type_upgrade );
-			[[ self.shop_system[ team ] ]]->AddDisplayChoices( parent, display_purchase, display_bought, display_unavailable );					
+			[[ self.shop_system[ team ] ]]->AddDisplayChoices( parent, display_purchase, display_bought, display_unavailable );
 		}
 	}
 	
@@ -143,16 +143,16 @@ function BuildShops()
 				display_unavailable = attachment.name + " unavailable";
 				display_swap = "Swap current optic for " +  attachment.name;
 
-				[[ self.shop_system[ team ] ]]->AddOption_GunDependent( parent, weapon_struct.weapon, &PurchaseAttachment, 500, weapon_struct.reference, attachment );	
+				[[ self.shop_system[ team ] ]]->AddOption_GunDependent( parent, weapon_struct.weapon, &PurchaseAttachment, 500, weapon_struct.reference, attachment );
 				[[ self.shop_system[ team ] ]]->AddDisplayChoices( parent, display_purchase, display_bought, display_unavailable, display_swap );
 				[[ self.shop_system[ team ] ]]->AddCallback( parent, "shop_weapon_change_complete", &ShopCallback_AttachmentUpgrade, self );
-			}		
+			}
 		}
 	}
 
 	//PERK MENU
 	parent = "perks";
-	[[ self.shop_system[ team ] ]]->AddParent( parent );	
+	[[ self.shop_system[ team ] ]]->AddParent( parent );
 
 	perks = loadout::GetAvailablePerks( team );
 	foreach( perk in perks )
@@ -166,10 +166,10 @@ function BuildShops()
 
 	//MISC MENU
 	parent = "misc";
-	[[ self.shop_system[ team ] ]]->AddParent( parent );	
+	[[ self.shop_system[ team ] ]]->AddParent( parent );
 
 	[[ self.shop_system[ team ] ]]->AddOption( parent, &PurchaseMaxAmmo, 750 );
-	[[ self.shop_system[ team ] ]]->AddDisplayChoices( parent, "Purchase max ammo for current weapon", undefined, "Current weapon already has max ammmo" );		
+	[[ self.shop_system[ team ] ]]->AddDisplayChoices( parent, "Purchase max ammo for current weapon", undefined, "Current weapon already has max ammmo" );
 	[[ self.shop_system[ team ] ]]->AddCallback( parent, "shop_ammo_purchased", &ShopCallback_MaxAmmo, self );
 	[[ self.shop_system[ team ] ]]->AddCallback( parent, "shop_weapon_fired", &ShopCallback_MaxAmmo, self );
 	[[ self.shop_system[ team ] ]]->AddCallback( parent, "shop_weapon_change_complete", &ShopCallback_MaxAmmo, self );
@@ -192,7 +192,7 @@ class Shop
 
 	var index_top_menu;			//used to determine which menu to start drawing from 
 
-	var team;
+	var team;					//set what team can run the shop items (fail safe)
 
 	constructor()
 	{
@@ -253,6 +253,7 @@ class Shop
 		}
 
 		data[ parent ] = SpawnStruct();
+
 		data[ parent ].index = util::GetArraySize( menu );
 		data[ parent ].scroll = 0;
 		data[ parent ].scroll_sub = [];								//only used with gun dependent options
@@ -288,7 +289,7 @@ class Shop
 		if( !util::isValidArray( data[ parent ].scroll_sub[ reference ] ) )
 		{
 			SetParentScroll_Sub( parent, reference, index_option );
-		}	
+		}
 	}
 
 	function AddOption( parent, func, cost = 0, parameter_1 = undefined, parameter_2 = undefined, parameter_3 = undefined, is_default = false )
@@ -313,7 +314,8 @@ class Shop
 	{
 		element = SpawnStruct();
 
-		element.option = SpawnStruct();			
+		element.option = SpawnStruct();
+
 		element.option.display = "";			//auto-generated
 		element.option.purchase = "";			//mandatory
 		element.option.bought = "";				//optional
@@ -333,7 +335,7 @@ class Shop
 		element.index_parent = index_parent;	//auto-generated
 		element.index_option = index_option;	//auto-generated
 
-		element.func = func;					//mandatory		
+		element.func = func;					//mandatory
 
 		element.parameter_1 = parameter_1;		//optional
 		element.parameter_2 = parameter_2;		//optional
@@ -342,7 +344,7 @@ class Shop
 		element.reference = "";					//optional
 
 		return element;
-	}	
+	}
 
 	function AddDisplayChoices( parent, display_purchase, display_bought = "", display_unavailable = "", display_swap = "" )
 	{
@@ -376,11 +378,6 @@ class Shop
 	{
 		option = "";
 
-		if( ( !util::isValidInt( index_parent ) || index_parent < 0 ) || ( !util::isValidInt( index_option ) || index_option < 0 ) )
-		{
-			return option;	
-		}
-
 		element = menu[ index_parent ][ index_option ];
 
 		if( element.bought )
@@ -410,7 +407,7 @@ class Shop
 		return option;
 	}
 
-	function AddCallback( parent, event, func, obj = undefined )	
+	function AddCallback( parent, event, func, obj = undefined )
 	{
 		if( !isValidParent( parent ) )
 		{
@@ -444,6 +441,7 @@ class Shop
 		element = menu[ index_parent ][ index_option ];
 
 		callback = SpawnStruct();
+
 		callback.obj = obj;
 		callback.func = func;
 		callback.index_parent = element.index_parent;
@@ -463,24 +461,8 @@ class Shop
 	************************************************************************************* */
 
 	function private GetParents()
-	{		
-		return GetArrayKeys( data );
-	}
-
-	function private GetMenuFromParent( parent )
 	{
-		_menu = [];
-
-		if( !isValidParent( parent ) )
-		{
-			return _menu;
-		}
-
-		index_parent = GetParentIndex( parent );
-
-		_menu = menu[ index_parent ];
-
-		return _menu;
+		return GetArrayKeys( data );
 	}
 
 	function private GetParentIndex( parent )
@@ -523,7 +505,7 @@ class Shop
 
 	function private GetParentScroll( parent )
 	{
-		scroll = 0;		
+		scroll = 0;
 
 		if( !isValidParent( parent ) )
 		{
@@ -544,7 +526,7 @@ class Shop
 
 		index_parent = GetParentIndex( parent );
 
-		if( !util::isValidInt( scroll ) || scroll < 0 || scroll > util::GetArraySize( menu[ index_parent ] ) - 1 )		
+		if( !util::isValidInt( scroll ) || scroll < 0 || scroll > util::GetArraySize( menu[ index_parent ] ) - 1 )
 		{
 			return;
 		}
@@ -555,11 +537,6 @@ class Shop
 	function private GetParentScroll_Sub( parent, reference )
 	{
 		scroll = 0;
-
-		if( !isValidParent( parent ) )
-		{
-			return scroll;
-		}
 
 		if( !util::isValidString( reference ) )
 		{
@@ -578,16 +555,6 @@ class Shop
 
 	function SetParentScroll_Sub( parent, reference, scroll )
 	{
-		if( !isValidParent( parent ) )
-		{
-			return;
-		}
-
-		if( !util::isValidString( reference ) )
-		{
-			return;
-		}
-
 		index_parent = GetParentIndex( parent );
 
 		if( !util::isValidInt( scroll ) || scroll < 0 || scroll > util::GetArraySize( menu[ index_parent ] ) - 1 )
@@ -595,7 +562,7 @@ class Shop
 			return;
 		}
 
-		data[ parent ].scroll_sub[ reference ] = scroll;
+		data[ parent ].scroll_sub[ reference ] = Int( scroll );
 	}
 
 	/* *************************************************************************************
@@ -607,33 +574,45 @@ class Shop
 
 	function private isValidParent( parent )
 	{
+		result = false;
+
 		if( !util::isValidString( parent ) )
 		{
-			return false;
+			return result;
 		}
 
-		return isdefined( data[ parent ] );
-	}	
+		result = isdefined( data[ parent ] );
+
+		return result;
+	}
 
 	function private isParentGunDependent( parent )
 	{
+		result = false;
+
 		if( !isValidParent( parent ) )
 		{
-			return false;
+			return result;
 		}
 
-		return data[ parent ].is_gun_dependent;
+		result = data[ parent ].is_gun_dependent;
+
+		return result;
 	}
 
 	function private isParentScrollLocked( parent )
 	{
+		result = false;
+
 		if( !isValidParent( parent ) )
 		{
-			return false;
+			return result;
 		}
 
-		return data[ parent ].manual_scroll_lock;
-	}	
+		result = data[ parent ].manual_scroll_lock;
+
+		return result;
+	}
 
 	/* *************************************************************************************
 
@@ -672,13 +651,13 @@ class Shop
 		Sub Section:	Option Updating
 		Description:	Handles the options and return menu elements
 
-	************************************************************************************* */	
+	************************************************************************************* */
 
 	function GetOption( index_selected, weapon )
 	{
 		option = undefined;
 
-		if( !util::isValidInt( index_selected ) ) 
+		if( !util::isValidInt( index_selected ) )
 		{
 			return option;
 		}
@@ -782,7 +761,7 @@ class Shop
 			return;
 		}
 
-		if( element.bought )				
+		if( element.bought )
 		{
 			return;
 		}
@@ -802,7 +781,7 @@ class Shop
 
 		if( isdefined( element.parameter_3 ) )
 		{
-			obj [[ element.func ]]( owner, element.cost, element, state, element.parameter_1, element.parameter_2, element.parameter_3 );		
+			obj [[ element.func ]]( owner, element.cost, element, state, element.parameter_1, element.parameter_2, element.parameter_3 );
 		}
 		else if( isdefined( element.parameter_2 ) )
 		{
@@ -815,7 +794,7 @@ class Shop
 		else
 		{
 			obj [[ element.func ]]( owner, element.cost, element, state );
-		}	
+		}
 	}
 
 	function Callback( event )
@@ -829,9 +808,9 @@ class Shop
 		events = GetArrayKeys( callbacks );
 
 		foreach( callback in callbacks[ event ] )
-		{				
+		{
 			//get the element again just in case the element was updated somewhere
-			element = menu[ callback.index_parent ][ callback.index_option ];	
+			element = menu[ callback.index_parent ][ callback.index_option ];
 			state = GetOptionState( element );
 
 			if( isdefined( callback.obj ) )
@@ -880,7 +859,7 @@ class Shop
 				index_selected = 0;
 
 				top_menu--;
-				SetTopMenu( top_menu );				
+				SetTopMenu( top_menu );
 			}
 			else
 			{
@@ -903,13 +882,13 @@ class Shop
 
 				top_menu++;
 				SetTopMenu( top_menu );
-			}			
+			}
 		}
 
 		return index_selected;
 	}
 
-	function Scroll_Horizontal( index_selected, increment, weapon = "", manual_scroll = true )
+	function Scroll_Horizontal( index_selected, increment, weapon = undefined, manual_scroll = true )
 	{
 		if( !util::isValidInt( index_selected ) || !util::isValidInt( increment ) )
 		{
@@ -918,6 +897,11 @@ class Shop
 
 		index_parent = GetTopMenuIndex() + index_selected;
 		parent = GetParentFromIndex( index_parent );
+
+		if( !isValidParent( parent ) )
+		{
+			return;
+		}
 
 		if( manual_scroll && isParentScrollLocked( parent ) )
 		{
@@ -935,24 +919,26 @@ class Shop
 
 			cycling = true;
 
+
 			do
 			{
 				scroll = GetParentScroll_Sub( parent, reference ) + increment;
 				scroll = CheckScrollBounds_Horizontal( index_parent, scroll );
+				SetParentScroll_Sub( parent, reference, scroll );				
 
-				SetParentScroll_Sub( parent, reference, scroll );
+				IPrintLn( scroll );
 
 				if( util::CompareStrings( menu[ index_parent ][ scroll ].reference, reference ) )
 				{
 					cycling = false;
-				}
+				}				
 			}
 			while( cycling );
 		}
 		else
 		{
 			scroll = GetParentScroll( parent ) + increment;
-			scroll = CheckScrollBounds_Horizontal( index_parent, scroll );			
+			scroll = CheckScrollBounds_Horizontal( index_parent, scroll );
 
 			SetParentScroll( parent, scroll );
 		}
@@ -1009,12 +995,12 @@ function ShopCallback_PowerPurchased( team, element, state )
 		//the player has a gadget, check to see if it have max power
 		slot = 0;
 		if( self GadgetPowerGet( slot ) == 100 )
-		{			
+		{
 			element.bought = true;
 			element.available = false;
 		}
 		else
-		{		
+		{
 			element.bought = false;
 			element.available = true;
 		}
@@ -1048,7 +1034,7 @@ function ShopCallback_AttachmentUpgrade( team, element, state )
 		{
 			element.bought = false;
 			element.swappable = true;
-			element.available = false;				
+			element.available = false;
 		}
 	}
 	//the gun has max amount of attachments and none can be swapped
@@ -1065,7 +1051,7 @@ function ShopCallback_MaxAmmo( team, element, state )
 {
 	weapon_current = self GetCurrentWeapon();
 
-	element.available = ( util::HasMaxAmmo( weapon_current ) ? false : true );	
+	element.available = ( util::HasMaxAmmo( weapon_current ) ? false : true );
 	[[ self.shop_system[ team ] ]]->SetOption( element.parent, element.index_parent, element.index_option, element );
 
 	RefreshShop_Safe_Single( team, element, state );
@@ -1101,6 +1087,7 @@ function ShopCallback_MaxAmmoAllWeapons( team, element, state )
 function ResetChash()
 {
 	self.cash = SpawnStruct();
+
 	self.cash.start = ( self quarantine_chaos::isZombie() ? 300 : 100 );
 	self.cash.spent = 0;
 

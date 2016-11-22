@@ -15,6 +15,8 @@ scriptparsetree,scripts/mp/gametypes/quarantine_chaos_shop_items.gsc
 
 rawfile,gamedata/gamesettings/mp/gamesettings_quarantine_chaos.cfg
 
+rawfile,vision/mp_quarantine_chaos.vision
+
 localize,qc
 
 rawfile,cp_mod.cfg

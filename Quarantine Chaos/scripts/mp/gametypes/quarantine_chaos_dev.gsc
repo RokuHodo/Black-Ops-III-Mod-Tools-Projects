@@ -28,7 +28,7 @@ function WatchBotButtons()
 		return;
 	}
 
-	self notify( "bot_button_watch_reset" );	
+	self notify( "bot_button_watch_reset" );
 
 	self endon( "death" );
 	self endon( "disconnect" );

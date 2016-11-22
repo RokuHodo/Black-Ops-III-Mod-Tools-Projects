@@ -25,9 +25,9 @@
 
 ------------------------------------------------------------------------------------- */
 
-function ThreadOnNotify( flag, func, parameter_1 = undefined,  parameter_2 = undefined, parameter_2 = undefined, parameter_3 = undefined, parameter_4 = undefined, parameter_5 = undefined, parameter_6 = undefined, parameter_7 = undefined, parameter_8 = undefined, parameter_9 = undefined,  parameter_10 = undefined )
+function ThreadOnNotify( obj = self, flag, func, parameter_1 = undefined,  parameter_2 = undefined, parameter_3 = undefined, parameter_4 = undefined, parameter_5 = undefined, parameter_6 = undefined, parameter_7 = undefined, parameter_8 = undefined, parameter_9 = undefined,  parameter_10 = undefined )
 {
-	if( !isValidString( flag ) )	
+	if( !isValidString( flag ) )
 	{
 		return;
 	}
@@ -41,54 +41,54 @@ function ThreadOnNotify( flag, func, parameter_1 = undefined,  parameter_2 = und
 
 	if( isdefined( parameter_10 ) )
 	{
-		self thread [[ func ]]( parameter_1,  parameter_2, parameter_2, parameter_3, parameter_4, parameter_5, parameter_6, parameter_7, parameter_8, parameter_9,  parameter_10 );
+		obj thread [[ func ]]( parameter_1,  parameter_2, parameter_2, parameter_3, parameter_4, parameter_5, parameter_6, parameter_7, parameter_8, parameter_9,  parameter_10 );
 	}
 	else if( isdefined( parameter_9 ) )
 	{
-		self thread [[ func ]]( parameter_1,  parameter_2, parameter_2, parameter_3, parameter_4, parameter_5, parameter_6, parameter_7, parameter_8, parameter_9 );
+		obj thread [[ func ]]( parameter_1,  parameter_2, parameter_2, parameter_3, parameter_4, parameter_5, parameter_6, parameter_7, parameter_8, parameter_9 );
 	}
 	else if( isdefined( parameter_8 ) )
 	{
-		self thread [[ func ]]( parameter_1,  parameter_2, parameter_2, parameter_3, parameter_4, parameter_5, parameter_6, parameter_7, parameter_8 );
+		obj thread [[ func ]]( parameter_1,  parameter_2, parameter_2, parameter_3, parameter_4, parameter_5, parameter_6, parameter_7, parameter_8 );
 	}
 	else if( isdefined( parameter_7 ) )
 	{
-		self thread [[ func ]]( parameter_1,  parameter_2, parameter_2, parameter_3, parameter_4, parameter_5, parameter_6, parameter_7 );
+		obj thread [[ func ]]( parameter_1,  parameter_2, parameter_2, parameter_3, parameter_4, parameter_5, parameter_6, parameter_7 );
 	}
 	else if( isdefined( parameter_6 ) )
 	{
-		self thread [[ func ]]( parameter_1,  parameter_2, parameter_2, parameter_3, parameter_4, parameter_5, parameter_6 );
+		obj thread [[ func ]]( parameter_1,  parameter_2, parameter_2, parameter_3, parameter_4, parameter_5, parameter_6 );
 	}
 	else if( isdefined( parameter_5 ) )
 	{
-		self thread [[ func ]]( parameter_1,  parameter_2, parameter_2, parameter_3, parameter_4, parameter_5 );
+		obj thread [[ func ]]( parameter_1,  parameter_2, parameter_2, parameter_3, parameter_4, parameter_5 );
 	}
 	else if( isdefined( parameter_4 ) )
 	{
-		self thread [[ func ]]( parameter_1,  parameter_2, parameter_2, parameter_3, parameter_4 );
+		obj thread [[ func ]]( parameter_1,  parameter_2, parameter_2, parameter_3, parameter_4 );
 	}
 	else if( isdefined( parameter_3 ) )
 	{
-		self thread [[ func ]]( parameter_1,  parameter_2, parameter_2, parameter_3);	
+		obj thread [[ func ]]( parameter_1,  parameter_2, parameter_2, parameter_3);
 	}
 	else if( isdefined( parameter_2 ) )
 	{
-		self thread [[ func ]]( parameter_1,  parameter_2, parameter_2 );
+		obj thread [[ func ]]( parameter_1,  parameter_2, parameter_2 );
 	}
 	else if( isdefined( parameter_1 ) )
 	{
-		self thread [[ func ]]( parameter_1,  parameter_2 );
+		obj thread [[ func ]]( parameter_1,  parameter_2 );
 	}
 	else
 	{
-		self thread [[ func ]]();
+		obj thread [[ func ]]();
 	}
 }
 
 /* -------------------------------------------------------------------------------------
 
 	Section:		Team
-	Description:	Functions that aid in anything team based.					
+	Description:	Functions that aid in anything team based.
 
 ------------------------------------------------------------------------------------- */
 
@@ -160,7 +160,7 @@ function ChangeDvarOverTime( dvar, value, time )
 /* -------------------------------------------------------------------------------------
 
 	Section:		Sound
-	Description:	Functions that amake working with sounds a bit easier.					
+	Description:	Functions that amake working with sounds a bit easier.
 
 ------------------------------------------------------------------------------------- */
 
@@ -336,7 +336,7 @@ function IndexOf( str, sub_str, start = 0 )
 				//IPrintLn( "^2The character (" + sub_str + ") was found at index (" + index + ")" );
 
 				return index;
-			}				
+			}
 		}
 	}
 	else
@@ -470,7 +470,7 @@ function CreateDisplay( alpha = 1.0, fontscale = 1.0, point = "CENTER", relative
 	else if( isValidString( MakeLocalizedString( value ) ) )
 	{
 		display SetText( value );
-	}	
+	}
 
 	return display;
 }
@@ -536,7 +536,7 @@ class ServerWaypoint
 		}
 		else
 		{
-			waypoint = NewHudElem();	
+			waypoint = NewHudElem();
 		}
 
 		waypoint.x = origin[ 0 ];
@@ -578,8 +578,6 @@ class ServerWaypoint
 	}
 }
 
-
-
 function CreateServerShader( alpha = 1.0, shader = "white", width = 0, height = 0, align = "CENTER", relative = "CENTER", x = 0, y = 0, color = ( 1, 1, 1 ), team = "" )
 {
 	server_shader = _CreateShader( "server",  alpha, shader, width, height, align, relative, x, y, color, team );
@@ -588,7 +586,7 @@ function CreateServerShader( alpha = 1.0, shader = "white", width = 0, height = 
 }
 
 function CreateShader( alpha = 1.0, shader = "white", width = 0, height = 0, align = "CENTER", relative = "CENTER", x = 0, y = 0, color = ( 1, 1, 1 ) )
-{	
+{
 	client_shader = _CreateShader( "client", alpha, shader, width, height, align, relative, x, y, color );
 
 	return client_shader;
@@ -724,7 +722,7 @@ class PausableTimer
 
 	function SetBackgroundProperties( alpha, shader, width_paused, width_running, color )
 	{
-		properties[ "background" ].alpha = alpha;		
+		properties[ "background" ].alpha = alpha;
 		properties[ "background" ].color = color;
 
 		properties[ "background" ].shader = shader;
@@ -738,7 +736,7 @@ class PausableTimer
 		properties[ "background" ].y = properties[ "timer" ].y + hud_offset.y;
 	}
 
-	function CreateTimer()
+	function DrawTimer()
 	{
 		self notify( "destroy_pausable_timer" );
 
@@ -770,11 +768,11 @@ class PausableTimer
 
 		if( !array::contains( notifies, element ) )
 		{
-			ARRAY_ADD( notifies, element );			
+			ARRAY_ADD( notifies, element );
 		}
 	}
 
-	function CreateBackground()
+	function DrawBackground()
 	{
 		prop = properties[ "background" ];
 
@@ -787,12 +785,12 @@ class PausableTimer
 
 	function private GetLabel()
 	{
-		return ( running ? properties[ "timer" ].label_running : properties[ "timer" ].label_paused );		
+		return ( running ? properties[ "timer" ].label_running : properties[ "timer" ].label_paused );
 	}
 
 	function private GetBackgroundWidth()
 	{
-		return ( running ? properties[ "background" ].width_running : properties[ "background" ].width_paused );		
+		return ( running ? properties[ "background" ].width_running : properties[ "background" ].width_paused );
 	}
 
 	function Start()
@@ -839,7 +837,7 @@ class PausableTimer
 
 		//"refresh" the hud
 		//needs to be re-drawn because only setting the label leaves the actual timer portion on screen
-		self CreateTimer();
+		self DrawTimer();
 	}
 
 	function private MonitorTimerDestroy()
@@ -885,7 +883,7 @@ class PausableTimer
 
 		foreach( index, element in notifies )
 		{
-			//<= just in case if it's a server frame or two off 
+			//<= just in case if it's a server frame or two off
 			if( time <= element.time )
 			{
 				if( isdefined( element.obj ) )
@@ -933,7 +931,7 @@ function DestroyOnNotify_Array( huds, notification, keys_ignore = undefined )
 		return;
 	}
 
-	self waittill( notification );	
+	self waittill( notification );
 
 	foreach( key in keys )
 	{
@@ -1014,7 +1012,7 @@ function isButtonPressed( button )
 		break;
 
 		case "+use":
-		case "+activate":		
+		case "+activate":
 		{
 			pressed = self UseButtonPressed();
 		}
@@ -1478,7 +1476,7 @@ function CompareStrings( string_1, string_2, ignore_case = false )
 
 	if( ignore_case )
 	{
-		valid = ToLower( string_1 ) == ToLower( string_2 );		
+		valid = ToLower( string_1 ) == ToLower( string_2 );
 	}
 	else
 	{
@@ -1521,6 +1519,25 @@ function GetArraySize( array )
 	Description:	Everything else that doesn't have a home.
 
 ************************************************************************************* */
+
+function ClampValue_Inclusive( value, value_min, value_max, value_default = undefined )
+{
+	if( isdefined( value_default ) )
+	{
+		value_default = ClampValue_Inclusive( value_default, value_min, value_max );
+	}
+
+	if( value < value_min )
+	{
+		value = ( isdefined( value_default ) ? value_default : value_min );
+	}
+	else if( value > value_max )
+	{
+		value = ( isdefined( value_default ) ? value_default : value_max );	
+	}
+
+	return value;
+}
 
 function blank( parameter_1, parameter_2, parameter_3, parameter_4, parameter_5, parameter_6, parameter_7, parameter_8, parameter_9, parameter_10 )
 {

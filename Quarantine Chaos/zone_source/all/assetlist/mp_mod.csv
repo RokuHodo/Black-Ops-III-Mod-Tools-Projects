@@ -3,6 +3,7 @@ rawfile,core_mod.cfg
 rawfile,cp_mod.cfg
 rawfile,gamedata/gamesettings/mp/gamesettings_quarantine_chaos.cfg
 rawfile,mp_mod.cfg
+rawfile,vision/mp_quarantine_chaos.vision
 rawfile,zm_mod.cfg
 scriptparsetree,scripts/mp/gametypes/quarantine_chaos.csc
 scriptparsetree,scripts/mp/gametypes/quarantine_chaos.gsc
