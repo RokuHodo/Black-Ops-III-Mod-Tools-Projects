@@ -25,8 +25,11 @@
 
 ------------------------------------------------------------------------------------- */
 
-function ThreadOnNotify( obj = self, flag, func, parameter_1 = undefined,  parameter_2 = undefined, parameter_3 = undefined, parameter_4 = undefined, parameter_5 = undefined, parameter_6 = undefined, parameter_7 = undefined, parameter_8 = undefined, parameter_9 = undefined,  parameter_10 = undefined )
+function ThreadOnNotify( obj = self, flag, func, parameter_1 = undefined, parameter_2 = undefined, parameter_3 = undefined, parameter_4 = undefined, parameter_5 = undefined, parameter_6 = undefined, parameter_7 = undefined, parameter_8 = undefined, parameter_9 = undefined,  parameter_10 = undefined )
 {
+	self endon( "disconnect" );
+	level endon( "game_ended" );
+
 	if( !isValidString( flag ) )
 	{
 		return;
@@ -39,45 +42,55 @@ function ThreadOnNotify( obj = self, flag, func, parameter_1 = undefined,  param
 
 	self waittill( flag );
 
+	obj thread FunctionWrapper_VariableParameters( obj, func, parameter_1, parameter_2, parameter_3, parameter_4, parameter_5, parameter_6, parameter_7, parameter_8, parameter_9,  parameter_10 );
+}
+
+function FunctionWrapper_VariableParameters( obj, func, parameter_1 = undefined, parameter_2 = undefined, parameter_3 = undefined, parameter_4 = undefined, parameter_5 = undefined, parameter_6 = undefined, parameter_7 = undefined, parameter_8 = undefined, parameter_9 = undefined, parameter_10 = undefined )
+{
+	if( !isValidFunction( func ) )
+	{
+		return;
+	}
+
 	if( isdefined( parameter_10 ) )
 	{
-		obj thread [[ func ]]( parameter_1,  parameter_2, parameter_2, parameter_3, parameter_4, parameter_5, parameter_6, parameter_7, parameter_8, parameter_9,  parameter_10 );
+		obj thread [[ func ]]( parameter_1, parameter_2, parameter_3, parameter_4, parameter_5, parameter_6, parameter_7, parameter_8, parameter_9, parameter_10 );
 	}
 	else if( isdefined( parameter_9 ) )
 	{
-		obj thread [[ func ]]( parameter_1,  parameter_2, parameter_2, parameter_3, parameter_4, parameter_5, parameter_6, parameter_7, parameter_8, parameter_9 );
+		obj thread [[ func ]]( parameter_1, parameter_2, parameter_3, parameter_4, parameter_5, parameter_6, parameter_7, parameter_8, parameter_9 );
 	}
 	else if( isdefined( parameter_8 ) )
 	{
-		obj thread [[ func ]]( parameter_1,  parameter_2, parameter_2, parameter_3, parameter_4, parameter_5, parameter_6, parameter_7, parameter_8 );
+		obj thread [[ func ]]( parameter_1, parameter_2, parameter_3, parameter_4, parameter_5, parameter_6, parameter_7, parameter_8 );
 	}
 	else if( isdefined( parameter_7 ) )
 	{
-		obj thread [[ func ]]( parameter_1,  parameter_2, parameter_2, parameter_3, parameter_4, parameter_5, parameter_6, parameter_7 );
+		obj thread [[ func ]]( parameter_1, parameter_2, parameter_3, parameter_4, parameter_5, parameter_6, parameter_7 );
 	}
 	else if( isdefined( parameter_6 ) )
 	{
-		obj thread [[ func ]]( parameter_1,  parameter_2, parameter_2, parameter_3, parameter_4, parameter_5, parameter_6 );
+		obj thread [[ func ]]( parameter_1, parameter_2, parameter_3, parameter_4, parameter_5, parameter_6 );
 	}
 	else if( isdefined( parameter_5 ) )
 	{
-		obj thread [[ func ]]( parameter_1,  parameter_2, parameter_2, parameter_3, parameter_4, parameter_5 );
+		obj thread [[ func ]]( parameter_1, parameter_2, parameter_3, parameter_4, parameter_5 );
 	}
 	else if( isdefined( parameter_4 ) )
 	{
-		obj thread [[ func ]]( parameter_1,  parameter_2, parameter_2, parameter_3, parameter_4 );
+		obj thread [[ func ]]( parameter_1, parameter_2, parameter_3, parameter_4 );
 	}
 	else if( isdefined( parameter_3 ) )
 	{
-		obj thread [[ func ]]( parameter_1,  parameter_2, parameter_2, parameter_3);
+		obj thread [[ func ]]( parameter_1, parameter_2, parameter_3);
 	}
 	else if( isdefined( parameter_2 ) )
 	{
-		obj thread [[ func ]]( parameter_1,  parameter_2, parameter_2 );
+		obj thread [[ func ]]( parameter_1, parameter_2 );
 	}
 	else if( isdefined( parameter_1 ) )
 	{
-		obj thread [[ func ]]( parameter_1,  parameter_2 );
+		obj thread [[ func ]]( parameter_1 );
 	}
 	else
 	{

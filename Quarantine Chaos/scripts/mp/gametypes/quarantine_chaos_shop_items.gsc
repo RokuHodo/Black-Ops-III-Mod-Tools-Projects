@@ -24,16 +24,22 @@
 /* -------------------------------------------------------------------------------------
 
 	Section:		Shop Item Functions
-	Description:	The magic that makes the shop work.
+	Description:	The functions that are called when a shop option is purchased.
 
-	Notes:			The structure of each shop function should follow this order
+	Notes:			Every function is passed the following parameters in this order:
 
-					1) Perform all necessary checks
-					2) Perform the action					
-					3) Update the element in the shop
-					4) Update the cash
-					5) Refresh the menu if necessary
-					6) Run callbacks if necessary
+						1) team 	- the player's team
+						2) cost 	- how much money is required to purchase the shop item
+						3) element	- the complete option struct from the shop
+
+					The structure of each shop function should follow this order for best/cleanest results:
+
+						1) Perform all necessary checks
+						2) Perform the action being done				
+						3) Update the element in the shop
+						4) Update the cash
+						5) Refresh the menu if necessary
+						6) Run callbacks if necessary
 
 ------------------------------------------------------------------------------------- */
 
@@ -94,11 +100,11 @@ function PurchaseWeapon( team, cost, element, state, weapon )
 	element.available = false;
 	[[ self.shop_system[ team ] ]]->SetOption( element.parent, element.index_parent, element.index_option, element );
 
-	PurchaseSuccess( Highlight( weapon_name_localized ) + " purchased", cost );
+	self PurchaseSuccess( Highlight( weapon_name_localized ) + " purchased", cost );
 
-	RefreshShop_Safe_Single( team, element, state );
+	self RefreshShop_Safe_Single( team, element, state );
 
-	[[ self.shop_system[ team ] ]]->Callback( "shop_weapon_purchased" );
+	[[ self.shop_system[ team ] ]]->Callback( "shop_weapon_purchased", self );
 }
 
 function PurchasePerk( team, cost, element, state, perk_struct )
@@ -130,9 +136,9 @@ function PurchasePerk( team, cost, element, state, perk_struct )
 	element.bought = true;
 	[[ self.shop_system[ team ] ]]->SetOption( element.parent, element.index_parent, element.index_option, element );
 
-	PurchaseSuccess( Highlight( perk_struct.name ) + " purchased", cost );
+	self PurchaseSuccess( Highlight( perk_struct.name ) + " purchased", cost );
 	
-	RefreshShop_Safe_Single( team, element, state );
+	self RefreshShop_Safe_Single( team, element, state );
 }
 
 function PurchaseMaxHealth( team, cost, element, state, increment )
@@ -149,7 +155,7 @@ function PurchaseMaxHealth( team, cost, element, state, increment )
 	{
 		alias = quarantine_chaos::GetTeamAlias( team );
 
-		PurchaseFail( "Maximum health for " + Highlight( alias ) + " is " + Highlight( max_health_limit ) );
+		self PurchaseFail( "Maximum health for " + Highlight( alias ) + " is " + Highlight( max_health_limit ) );
 
 		return;
 	}
@@ -163,14 +169,14 @@ function PurchaseMaxHealth( team, cost, element, state, increment )
 	self.maxhealth = max_health;
 	self.health = max_health;
 
-	PurchaseSuccess( "Max health increased to " + Highlight( max_health ), cost );
+	self PurchaseSuccess( "Max health increased to " + Highlight( max_health ), cost );
 
 	if( max_health >= max_health_limit )
 	{
 		element.available = false;
 		[[ self.shop_system[ team ] ]]->SetOption( element.parent, element.index_parent, element.index_option, element );
 
-		RefreshShop_Safe_Single( team, element, state );
+		self RefreshShop_Safe_Single( team, element, state );
 	}
 }
 
@@ -187,10 +193,9 @@ function PurchaseGadgetPower( team, cost, element, state )
 	weapon_hero = util::GetHeroWeapon();
 	weapon_hero_name_localized = util::GetLocalizedWeaponName( weapon_hero );
 
+	//gadget already has max power or is active
 	slot = 0;
-
-	//gadget already has max power
-	if( self GadgetPowerGet( slot ) == 100 )
+	if( self GadgetPowerGet( slot ) == 100 || self GadgetIsActive( slot ) || self GadgetIsReady( slot ) || self GadgetIsPrimed( slot ) )
 	{
 		self IPrintLn( Highlight( weapon_hero_name_localized ) + " already has maximum power" ) ;
 
@@ -199,10 +204,10 @@ function PurchaseGadgetPower( team, cost, element, state )
 
 	self GadgetPowerChange( slot, 100 );
 
-	PurchaseSuccess( Highlight( weapon_hero_name_localized ) + " power purchased", cost );
+	self PurchaseSuccess( Highlight( weapon_hero_name_localized ) + " power purchased", cost );
 
 	//option handling handled entirely by the call back in this case
-	[[ self.shop_system[ team ] ]]->Callback( "shop_power_purchased" );
+	[[ self.shop_system[ team ] ]]->Callback( "shop_power_purchased", self );
 }
 
 function PurchaseUpgrade( team, cost, element, state, type_starter, type_upgrade )
@@ -254,9 +259,9 @@ function PurchaseUpgrade( team, cost, element, state, type_starter, type_upgrade
 	element.bought = true;
 	[[ self.shop_system[ team ] ]]->SetOption( element.parent, element.index_parent, element.index_option, element );
 
-	PurchaseSuccess( Highlight( weapon_current_name_localized ) + " upgraded to " + Highlight( weapon_upgrade_struct.name ), cost );
+	self PurchaseSuccess( Highlight( weapon_current_name_localized ) + " upgraded to " + Highlight( weapon_upgrade_struct.name ), cost );
 
-	RefreshShop_Safe_Single( team, element, state );
+	self RefreshShop_Safe_Single( team, element, state );
 }
 
 function PurchaseAttachment( team, cost, element, state, reference, attachment )
@@ -291,7 +296,7 @@ function PurchaseAttachment( team, cost, element, state, reference, attachment )
 	//no optic is present, the gun already has the max allowed attachments
 	else if( attachments_held >= max_attachments_allowed )
 	{
-		PurchaseFail( "Maximum attachments for " + Highlight( weapon_current_base_name_localized ) + " already purchased" );
+		self PurchaseFail( "Maximum attachments for " + Highlight( weapon_current_base_name_localized ) + " already purchased" );
 
 		return;
 	}	
@@ -316,14 +321,14 @@ function PurchaseAttachment( team, cost, element, state, reference, attachment )
 
 	if( util::isValidString( optic_swapped_name ) )
 	{
-		PurchaseSuccess( Highlight( optic_swapped_name ) + " swapped for " + Highlight( attachment.name ) );
+		self PurchaseSuccess( Highlight( optic_swapped_name ) + " swapped for " + Highlight( attachment.name ) );
 	}
 	
 	//get the new array size in case an optic wasn't swapped
 	attachments_held = util::GetArraySize( attachments );
-	PurchaseSuccess( "(" + attachments_held + "/" + max_attachments_allowed + ") " + Highlight( attachment.name ) + " purchased for " + Highlight( weapon_current_base_name_localized ), cost );
+	self PurchaseSuccess( "(" + attachments_held + "/" + max_attachments_allowed + ") " + Highlight( attachment.name ) + " purchased for " + Highlight( weapon_current_base_name_localized ), cost );
 
-	RefreshShop_Safe_Single( team, element, state );
+	self RefreshShop_Safe_Single( team, element, state );
 }
 
 function PurchaseMaxAmmo( team, cost, element, state, weapon = undefined, all_weapons = false )
@@ -342,7 +347,7 @@ function PurchaseMaxAmmo( team, cost, element, state, weapon = undefined, all_we
 
 	if( util::HasMaxAmmo( weapon ) )
 	{
-		PurchaseFail( Highlight( weapon_name_localized ) + " already has max ammo" );
+		self PurchaseFail( Highlight( weapon_name_localized ) + " already has max ammo" );
 
 		return;
 	}
@@ -351,12 +356,12 @@ function PurchaseMaxAmmo( team, cost, element, state, weapon = undefined, all_we
 	self GiveMaxAmmo( weapon );
 	self SetWeaponAmmoClip( weapon, weapon.clipSize );
 
-	PurchaseSuccess( "Ammo for " + Highlight( weapon_name_localized ) + " purchased", cost );
+	self PurchaseSuccess( "Ammo for " + Highlight( weapon_name_localized ) + " purchased", cost );
 
 	//dont' spam the callbac if it's for all weapons
 	if( !all_weapons )
 	{
-		[[ self.shop_system[ team ] ]]->Callback( "shop_ammo_purchased" );
+		[[ self.shop_system[ team ] ]]->Callback( "shop_ammo_purchased", self );
 	}
 }
 
@@ -366,7 +371,7 @@ function PurchaseMaxAmmo_AllWeapons( team, cost, element, state )
 
 	if( util::GetArraySize( weapons ) < 1 )
 	{
-		PurchaseFail( "There are no " + Highlight( "primary weapons" ) +" to give ammo to" );
+		self PurchaseFail( "There are no " + Highlight( "primary weapons" ) +" to give ammo to" );
 	}
 
 	ammo_given = false;
@@ -383,13 +388,13 @@ function PurchaseMaxAmmo_AllWeapons( team, cost, element, state )
 
 	if( ammo_given )
 	{
-		PurchaseSuccess( "Ammo for all " + Highlight( "primary weapons" ) + " purchased", cost );
+		self PurchaseSuccess( "Ammo for all " + Highlight( "primary weapons" ) + " purchased", cost );
 
-		[[ self.shop_system[ team ] ]]->Callback( "shop_ammo_purchased" );
+		[[ self.shop_system[ team ] ]]->Callback( "shop_ammo_purchased", self );
 	}
 	else
 	{
-		PurchaseFail( "All " + Highlight( "primary weapons" ) + " already have max ammo" );
+		self PurchaseFail( "All " + Highlight( "primary weapons" ) + " already have max ammo" );
 	}
 }
 

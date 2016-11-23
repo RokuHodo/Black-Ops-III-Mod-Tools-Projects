@@ -21,7 +21,7 @@ sound,mp_mod,english
 texturecombo,mp_mod
 assetlist,mp_mod
 	file,D:\Steam\steamapps\common\Call of Duty Black Ops III\share\raw\gamedata\playeranim\playeranimtypes.txt,1475300286,
-	file,D:\Steam\steamapps\common\Call of Duty Black Ops III\mods\mp_quarantine_chaos\zone_source\loc\mp_mod.zone,1479787901,e0e96ea0,4bf14166,f81fdbc9,79b70f89
+	file,D:\Steam\steamapps\common\Call of Duty Black Ops III\mods\mp_quarantine_chaos\zone_source\loc\mp_mod.zone,1479943498,e0e96ea0,4bf14166,f81fdbc9,79b70f89
 	file,D:\Steam\steamapps\common\Call of Duty Black Ops III\zone_source\english\assetlist\core_pre_gfx.csv,1475336646,4f38c8d2,54dbe0ad,a26fe6dd,7ce6fe27
 	file,D:\Steam\steamapps\common\Call of Duty Black Ops III\zone_source\english\assetlist\core_patch.csv,1475336642,0a7b10d4,ec037139,b775bcfd,cff55759
 	file,D:\Steam\steamapps\common\Call of Duty Black Ops III\zone_source\english\assetlist\core_gfx.csv,1475336618,4cd6243d,831296e2,f2d7c4d8,2e2c9159
@@ -56,5 +56,5 @@ assetlist,mp_mod
 	file,D:\Steam\steamapps\common\Call of Duty Black Ops III\share\raw\sound\contexts\water.ctx,1475300385,
 	file,D:\Steam\steamapps\common\Call of Duty Black Ops III\share\raw\sound\globals\master.csv,1475300305,
 	file,D:\Steam\steamapps\common\Call of Duty Black Ops III\share\raw\sound\globals\futz.csv,1475300172,
-	file,D:\Steam\steamapps\common\Call of Duty Black Ops III\mods\mp_quarantine_chaos\english\sound\zone\mp_mod.english.alias.sz,1479787905,
+	file,D:\Steam\steamapps\common\Call of Duty Black Ops III\mods\mp_quarantine_chaos\english\sound\zone\mp_mod.english.alias.sz,1479943501,
 errorcount,0

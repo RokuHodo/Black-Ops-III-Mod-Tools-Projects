@@ -47,14 +47,7 @@ function DrawHuds()
 		return;
 	}
 
-	if( !util::CompareStrings( team, [[ self.shop_system[ team ] ]]->GetShopOwner() ) )
-	{
-		self DestroyShop();
-
-		return;
-	}
-
-	[[ self.shop_system[ team ] ]]->Callback( "shop_power_purchased" );
+	[[ self.shop_system[ team ] ]]->Callback( "shop_power_purchased", self );
 
 	//first time the menu is drawn, need to set the index_selected
 	if( GetIndexSelected() < 0 )
@@ -501,7 +494,7 @@ function RunShopActions( team, index_selected, menu_display_limit )
 		{
 			case "purchase":
 			{
-				[[ self.shop_system[ team ] ]]->RunOption_Wrapper( self, index_selected, self GetCurrentWeapon(), self );
+				[[ self.shop_system[ team ] ]]->RunOption_Wrapper( self, index_selected, self GetCurrentWeapon() );
 			}
 			break;
 
@@ -528,13 +521,13 @@ function RunShopActions( team, index_selected, menu_display_limit )
 
 			case "weapon_fired":
 			{
-				[[ self.shop_system[ team ] ]]->Callback( "shop_weapon_fired" );
+				[[ self.shop_system[ team ] ]]->Callback( "shop_weapon_fired", self );
 			}
 			break;
 			
 			case "weapon_change_complete":
 			{
-				[[ self.shop_system[ team ] ]]->Callback( "shop_weapon_change_complete" );
+				[[ self.shop_system[ team ] ]]->Callback( "shop_weapon_change_complete", self );
 
 				RefreshShop();
 			}
@@ -542,13 +535,13 @@ function RunShopActions( team, index_selected, menu_display_limit )
 
 			case "hero_gadget_activated":
 			{
-				[[ self.shop_system[ team ] ]]->Callback( "shop_gadget_activated" );
+				[[ self.shop_system[ team ] ]]->Callback( "shop_gadget_activated", self );
 			}
 			break;
 
 			case "heroAbility_off":
 			{
-				[[ self.shop_system[ team ] ]]->Callback( "shop_gadget_deactivated" );
+				[[ self.shop_system[ team ] ]]->Callback( "shop_gadget_deactivated", self );
 			}
 			break;
 

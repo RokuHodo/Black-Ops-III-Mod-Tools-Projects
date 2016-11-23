@@ -37,7 +37,6 @@ function BuildShops()
 
 	team = "axis";
 	self.shop_system[ team ] = new Shop();
-	[[ self.shop_system[ team ] ]]->SetShopOwner( team );
 
 	//WEAPONS MENU
 	parent = "weapons";
@@ -49,7 +48,7 @@ function BuildShops()
 
 	display_purchase = "Purchase " + weapon_name_localized;
 	display_bought = weapon_name_localized + " already purchased";
-	[[ self.shop_system[ team ] ]]->AddOption( parent, &PurchaseWeapon, 750, weapon );
+	[[ self.shop_system[ team ] ]]->AddOption( parent, &PurchaseWeapon, 500, weapon );
 	[[ self.shop_system[ team ] ]]->AddDisplayChoices( parent, display_purchase, display_bought );
 
 	//ripper
@@ -58,7 +57,7 @@ function BuildShops()
 
 	display_purchase = "Purchase " + weapon_name_localized;
 	display_bought = weapon_name_localized + " already purchased";
-	[[ self.shop_system[ team ] ]]->AddOption( parent, &PurchaseWeapon, 750, weapon );
+	[[ self.shop_system[ team ] ]]->AddOption( parent, &PurchaseWeapon, 400, weapon );
 	[[ self.shop_system[ team ] ]]->AddDisplayChoices( parent, display_purchase, display_bought );
 
 	//PERK MENU
@@ -71,7 +70,7 @@ function BuildShops()
 		display_purchase = "Purchase " + perk.name;
 		display_bought = perk.name + " already purchased";
 
-		[[ self.shop_system[ team ] ]]->AddOption( parent, &PurchasePerk, 250, perk );
+		[[ self.shop_system[ team ] ]]->AddOption( parent, &PurchasePerk, 200, perk );
 		[[ self.shop_system[ team ] ]]->AddDisplayChoices( parent, display_purchase, display_bought );
 	}
 
@@ -79,13 +78,13 @@ function BuildShops()
 	parent = "misc";
 	[[ self.shop_system[ team ] ]]->AddParent( parent );
 
-	[[ self.shop_system[ team ] ]]->AddOption( parent, &PurchaseMaxHealth, 600, 25 );
+	[[ self.shop_system[ team ] ]]->AddOption( parent, &PurchaseMaxHealth, 500, 25 );
 	[[ self.shop_system[ team ] ]]->AddDisplayChoices( parent, "Increase max health", undefined, "Max health limit reached" );
 
 	[[ self.shop_system[ team ] ]]->AddOption( parent, &PurchaseGadgetPower, 500 );
 	[[ self.shop_system[ team ] ]]->AddDisplayChoices( parent, "Purchase gadget power", "Gadget already has max power", "No gadget held" );
-	[[ self.shop_system[ team ] ]]->AddCallback( parent, "shop_weapon_purchased", &ShopCallback_PowerPurchased, self );
 	[[ self.shop_system[ team ] ]]->AddCallback( parent, "shop_power_purchased", &ShopCallback_PowerPurchased, self );
+	[[ self.shop_system[ team ] ]]->AddCallback( parent, "shop_weapon_purchased", &ShopCallback_PowerPurchased, self );
 	[[ self.shop_system[ team ] ]]->AddCallback( parent, "shop_gadget_activated", &ShopCallback_PowerPurchased, self );
 	[[ self.shop_system[ team ] ]]->AddCallback( parent, "shop_gadget_deactivated", &ShopCallback_PowerPurchased, self );
 
@@ -95,7 +94,6 @@ function BuildShops()
 
 	team = "allies";
 	self.shop_system[ team ] = new Shop();
-	[[ self.shop_system[ team ] ]]->SetShopOwner( team );
 
 	//WEAPON UPGRADE MENU
 	if( quarantine_chaos::WeaponUpgradesAllowed() )
@@ -212,28 +210,6 @@ class Shop
 
 	/* *************************************************************************************
 
-		Susection:		Ownership
-		Description:	Sets which team can use the shop.
-
-	************************************************************************************* */
-
-	function SetShopOwner( _team )
-	{
-		if( !util::isValidTeam( _team ) )
-		{
-			return;
-		}
-
-		team = _team;
-	}
-
-	function GetShopOwner()
-	{
-		return team;
-	}
-
-	/* *************************************************************************************
-
 		Susection:		Building
 		Description:	Build the parents, options, and callbacks
 
@@ -255,10 +231,11 @@ class Shop
 		data[ parent ] = SpawnStruct();
 
 		data[ parent ].index = util::GetArraySize( menu );
-		data[ parent ].scroll = 0;
-		data[ parent ].scroll_sub = [];								//only used with gun dependent options
 		data[ parent ].manual_scroll_lock = manual_scroll_lock;		//prevent the user from manually scrolling
 		data[ parent ].is_gun_dependent = is_gun_dependent;
+
+		data[ parent ].scroll = 0;
+		data[ parent ].scroll_gun = [];
 	}
 
 	function AddOption_GunDependent( parent, weapon, func, cost = 0, parameter_1 = undefined, parameter_2 = undefined, parameter_3 = undefined, is_default = false )
@@ -278,17 +255,17 @@ class Shop
 			return;
 		}
 
-		index_parent = GetParentIndex( parent );
+		index_parent = GetParentData( parent ).index;
 		index_option = util::GetArraySize( menu[ index_parent ] );
 
-		reference = util::GetBaseWeapon( weapon ).name;
+		weapon_base_reference = util::GetBaseWeapon( weapon ).name;
 
-		menu[ index_parent ][ index_option ] = SetProperties( parent, index_parent, index_option, func, cost, parameter_1, parameter_2, parameter_3, is_default );
-		menu[ index_parent ][ index_option ].reference = reference;
+		menu[ index_parent ][ index_option ] = SetOptionFields( parent, index_parent, index_option, func, cost, parameter_1, parameter_2, parameter_3, is_default );
+		menu[ index_parent ][ index_option ].weapon_base_reference = weapon_base_reference;
 
-		if( !util::isValidArray( data[ parent ].scroll_sub[ reference ] ) )
+		if( !util::isValidArray( GetParentData( parent ).scroll_gun[ weapon_base_reference ] ) )
 		{
-			SetParentScroll_Sub( parent, reference, index_option );
+			SetParentScroll( parent, weapon_base_reference, index_option );
 		}
 	}
 
@@ -304,13 +281,13 @@ class Shop
 			return;
 		}
 
-		index_parent = GetParentIndex( parent );
+		index_parent = GetParentData( parent ).index;
 		index_option = util::GetArraySize( menu[ index_parent ] );
 
-		menu[ index_parent ][ index_option ] = SetProperties( parent, index_parent, index_option, func, cost, parameter_1, parameter_2, parameter_3, is_default );
+		menu[ index_parent ][ index_option ] = SetOptionFields( parent, index_parent, index_option, func, cost, parameter_1, parameter_2, parameter_3, is_default );
 	}
 
-	function private SetProperties( parent, index_parent, index_option, func, cost, parameter_1, parameter_2, parameter_3, is_default )
+	function private SetOptionFields( parent, index_parent, index_option, func, cost, parameter_1, parameter_2, parameter_3, is_default )
 	{
 		element = SpawnStruct();
 
@@ -341,7 +318,7 @@ class Shop
 		element.parameter_2 = parameter_2;		//optional
 		element.parameter_3 = parameter_3;		//optional
 		
-		element.reference = "";					//optional
+		element.weapon_base_reference = "";		//optional
 
 		return element;
 	}
@@ -358,10 +335,10 @@ class Shop
 			return;
 		}
 
-		index_parent = GetParentIndex( parent );
+		index_parent = GetParentData( parent ).index;
 		index_option = util::GetArraySize( menu[ index_parent ] ) - 1;
 
-		//this was called before AddOption
+		//this was called before AddOption()
 		if( index_option < 0 )
 		{
 			return;
@@ -424,7 +401,7 @@ class Shop
 			return;
 		}
 
-		index_parent = GetParentIndex( parent );
+		index_parent = GetParentData( parent ).index;
 		index_option = util::GetArraySize( menu[ index_parent ] ) - 1;
 
 		//this was called before AddOption
@@ -447,10 +424,12 @@ class Shop
 		callback.index_parent = element.index_parent;
 		callback.index_option = element.index_option;
 
-		if( !array::contains( callbacks[ event ], callback ) )
+		if( array::contains( callbacks[ event ], callback ) )
 		{
-			ARRAY_ADD( callbacks[ event ], callback );
+			return;
 		}
+
+		ARRAY_ADD( callbacks[ event ], callback );
 	}
 
 	/* *************************************************************************************
@@ -460,115 +439,104 @@ class Shop
 
 	************************************************************************************* */
 
+	function private GetMenu()
+	{
+		return menu;
+	}
+
 	function private GetParents()
 	{
 		return GetArrayKeys( data );
 	}
 
-	function private GetParentIndex( parent )
+	function private GetParentData( parent )
 	{
-		index = 0;
+		return data[ parent ];
+	}
 
-		if( !isValidParent( parent ) )
+	function private GetParentMenu( parameter )
+	{
+		parent_menu = undefined;
+
+		//really gheto way of doing overloading because GSC doesn't support it
+		if( util::isValidInt( parameter ) )
 		{
-			return index;
+			parent_menu = menu[ parameter ];
+		}
+		else if( util::isValidString( parameter ) )
+		{
+			index_parent = GetParentData( parameter ).index;
+
+			parent_menu = menu[ index_parent ];
+		}		
+
+		return parent_menu;
+	}
+
+	function private GetParentScroll( parent, weapon_base_reference )
+	{
+		parent_data = GetParentData( parent );
+		parent_menu = GetParentMenu( parent );
+
+		scroll = ( isParentGunDependent( parent ) ? parent_data.scroll_gun[ weapon_base_reference ] : parent_data.scroll );
+
+		if( !util::isValidInt( scroll ) )
+		{
+			scroll = 0;
 		}
 
-		index = data[ parent ].index;
+		scroll = util::ClampValue_Inclusive( scroll, 0, util::GetArraySize( parent_menu ) - 1, 0 );
 
-		return index;
+		return scroll;
+	}
+
+	function private SetParentScroll( parent, weapon_base_reference, scroll = 0 )
+	{
+		parent_menu = GetParentMenu( parent );
+
+		if( !util::isValidInt( scroll ) || scroll < 0 || scroll > util::GetArraySize( parent_menu ) - 1 )
+		{
+			return;
+		}
+
+		if( isParentGunDependent( parent ) )
+		{
+			data[ parent ].scroll_gun[ weapon_base_reference ] = scroll;
+		}
+		else
+		{
+			data[ parent ].scroll = scroll;	
+		}				
 	}
 
 	function private GetParentFromIndex( index_parent )
 	{
-		_parent = "";
+		parent = "";
 
 		if( !util::isValidInt( index_parent ) || index_parent < 0 )
 		{
-			return _parent;
+			return parent;
 		}
 
 		parents = GetParents();
 
-		foreach( parent in parents )
+		foreach( element in parents )
 		{
-			if( data[ parent ].index == index_parent )
+			if( data[ element ].index == index_parent )
 			{
-				_parent = parent;
+				parent = element;
 
-				return _parent;
+				return parent;
 			}
 		}
 
-		return _parent;
-	}
-
-	function private GetParentScroll( parent )
-	{
-		scroll = 0;
-
-		if( !isValidParent( parent ) )
-		{
-			return scroll;
-		}
-
-		scroll = data[ parent ].scroll;
-
-		return scroll;
-	}
-
-	function private SetParentScroll( parent, scroll )
-	{
-		if( !isValidParent( parent ) )
-		{
-			return;
-		}
-
-		index_parent = GetParentIndex( parent );
-
-		if( !util::isValidInt( scroll ) || scroll < 0 || scroll > util::GetArraySize( menu[ index_parent ] ) - 1 )
-		{
-			return;
-		}
-
-		data[ parent ].scroll = scroll;
-	}
-
-	function private GetParentScroll_Sub( parent, reference )
-	{
-		scroll = 0;
-
-		if( !util::isValidString( reference ) )
-		{
-			return scroll;
-		}
-
-		if( !util::isValidInt( data[ parent ].scroll_sub[ reference ] ) )
-		{
-			return scroll;
-		}
-
-		scroll = data[ parent ].scroll_sub[ reference ];
-
-		return scroll;
-	}
-
-	function SetParentScroll_Sub( parent, reference, scroll )
-	{
-		index_parent = GetParentIndex( parent );
-
-		if( !util::isValidInt( scroll ) || scroll < 0 || scroll > util::GetArraySize( menu[ index_parent ] ) - 1 )
-		{
-			return;
-		}
-
-		data[ parent ].scroll_sub[ reference ] = Int( scroll );
+		return parent;
 	}
 
 	/* *************************************************************************************
 
-		Sub Section:	Parent Data Checks
-		Description:	Bollean checks when handling any of the menus
+		Sub Section:	Parent / Callback Checks
+		Description:	Bollean checks when handling any of the menus and callbacks
 
 	************************************************************************************* */	
 
@@ -588,16 +556,7 @@ class Shop
 
 	function private isParentGunDependent( parent )
 	{
-		result = false;
-
-		if( !isValidParent( parent ) )
-		{
-			return result;
-		}
-
-		result = data[ parent ].is_gun_dependent;
-
-		return result;
+		return data[ parent ].is_gun_dependent;
 	}
 
 	function private isParentScrollLocked( parent )
@@ -610,6 +569,20 @@ class Shop
 		}
 
 		result = data[ parent ].manual_scroll_lock;
+
+		return result;
+	}
+
+	function isValidCallbackEvent( event )
+	{
+		result = false;
+
+		if( !util::isValidString( event ) )
+		{
+			return result;
+		}
+
+		result = isdefined( callbacks[ event ] );
 
 		return result;
 	}
@@ -636,7 +609,7 @@ class Shop
 		return index;
 	}
 
-	function private SetTopMenu( index )
+	function private SetTopMenuIndex( index )
 	{
 		if( !util::isValidInt( index ) || index < 0 )
 		{
@@ -672,7 +645,7 @@ class Shop
 			return option;
 		}
 
-		scroll = ( isParentGunDependent( parent ) ? GetParentScroll_Sub( parent, weapon_base_reference ) : GetParentScroll( parent ) );
+		scroll = GetParentScroll( parent, weapon_base_reference );
 
 		menu[ index ][ scroll ].option.display = GetDisplayChoice( index, scroll );
 
@@ -698,7 +671,14 @@ class Shop
 		state.available = element.available;
 
 		return state;
-	}
+	}	
+
+	/* *************************************************************************************
+
+		Sub Section:	Option Boolean Checks
+		Description:	Various checks used when updating / handling options.
+
+	************************************************************************************* */
 
 	function OptionStateChanged( element, state )
 	{
@@ -722,25 +702,30 @@ class Shop
 
 	function isOptionDrawn( element, menu_display_limit, weapon )
 	{
+		result = false;
+
 		range_min = GetTopMenuIndex();
 		range_max = range_min + menu_display_limit - 1;
 
 		//parent is out of the range that is drawn
 		if( element.index_parent < range_min || element.index_parent > range_max )
 		{
-			return false;
+			return result;
 		}
 
 		weapon_base_reference = util::GetBaseWeapon( weapon ).name;
-		scroll = ( isParentGunDependent( element.parent ) ? GetParentScroll_Sub( element.parent, weapon_base_reference ) : GetParentScroll( element.parent ) );
+
+		scroll = GetParentScroll( element.parent, weapon_base_reference );
 
 		//the element being checked is not he one that is currently drawn
 		if( element.index_option != scroll )
 		{
-			return false;
+			return result;
 		}
 
-		return true;
+		result = true;
+
+		return result;
 	}
 
 	/* *************************************************************************************
@@ -750,10 +735,8 @@ class Shop
 
 	************************************************************************************* */
 
-	function RunOption_Wrapper( obj, index_selected, weapon, player )
+	function RunOption_Wrapper( player, index_selected, weapon )
 	{
-		owner = GetShopOwner();
-
 		element = GetOption( index_selected, weapon );
 
 		if( !isdefined( element ) )
@@ -761,6 +744,7 @@ class Shop
 			return;
 		}
 
+		//has the option already been bought?
 		if( element.bought )
 		{
 			return;
@@ -779,47 +763,29 @@ class Shop
 
 		state = GetOptionState( element );
 
-		if( isdefined( element.parameter_3 ) )
-		{
-			obj [[ element.func ]]( owner, element.cost, element, state, element.parameter_1, element.parameter_2, element.parameter_3 );
-		}
-		else if( isdefined( element.parameter_2 ) )
-		{
-			obj [[ element.func ]]( owner, element.cost, element, state, element.parameter_1, element.parameter_2 );
-		}
-		else if( isdefined( element.parameter_1 ) )
-		{
-			obj [[ element.func ]]( owner, element.cost, element, state, element.parameter_1 );
-		}
-		else
-		{
-			obj [[ element.func ]]( owner, element.cost, element, state );
-		}
+		player thread util::FunctionWrapper_VariableParameters( player, element.func, player.pers[ "team" ], element.cost, element, state, element.parameter_1, element.parameter_2, element.parameter_3 );
 	}
 
-	function Callback( event )
+	function Callback( event, player )
 	{
-		if( !util::isValidString( event ) )
+		if( !isValidCallbackEvent( event ) )
 		{
 			return;
 		}
 
-		owner = GetShopOwner();
-		events = GetArrayKeys( callbacks );
-
 		foreach( callback in callbacks[ event ] )
 		{
 			//get the element again just in case the element was updated somewhere
-			element = menu[ callback.index_parent ][ callback.index_option ];
+			element = GetParentMenu( callback.index_parent )[ callback.index_option ];
 			state = GetOptionState( element );
 
 			if( isdefined( callback.obj ) )
 			{
-				callback.obj thread [[ callback.func ]]( owner, element, state );
+				callback.obj thread [[ callback.func ]]( player.pers[ "team" ], element, state );
 			}
 			else
 			{
-				self thread [[ callback.func ]]( owner, element, state );
+				self thread [[ callback.func ]]( player.pers[ "team" ], element, state );
 			}
 		}
 	}
@@ -852,6 +818,8 @@ class Shop
 	{
 		top_menu = GetTopMenuIndex();
 
+		menu_size = util::GetArraySize( GetMenu() );
+
 		if( index_selected < 0 )
 		{
 			if( top_menu > 0 )
@@ -859,36 +827,36 @@ class Shop
 				index_selected = 0;
 
 				top_menu--;
-				SetTopMenu( top_menu );
+				SetTopMenuIndex( top_menu );
 			}
 			else
 			{
 				index_selected = menu_display_limit - 1;
 				
-				top_menu = menu.size - menu_display_limit;
-				SetTopMenu( top_menu );
+				top_menu = menu_size - menu_display_limit;
+				SetTopMenuIndex( top_menu );
 			}
 		}
 		else if( index_selected > menu_display_limit - 1 )
 		{
-			if( top_menu + menu_display_limit > menu.size - 1 )
+			if( top_menu + menu_display_limit > menu_size - 1 )
 			{
 				index_selected = 0;
-				SetTopMenu( index_selected );
+				SetTopMenuIndex( index_selected );
 			}
 			else
 			{
 				index_selected = menu_display_limit - 1;
 
 				top_menu++;
-				SetTopMenu( top_menu );
+				SetTopMenuIndex( top_menu );
 			}
 		}
 
 		return index_selected;
 	}
 
-	function Scroll_Horizontal( index_selected, increment, weapon = undefined, manual_scroll = true )
+	function Scroll_Horizontal( index_selected, increment, weapon, manual_scroll = true )
 	{
 		if( !util::isValidInt( index_selected ) || !util::isValidInt( increment ) )
 		{
@@ -897,6 +865,7 @@ class Shop
 
 		index_parent = GetTopMenuIndex() + index_selected;
 		parent = GetParentFromIndex( index_parent );
+		parent_menu_size = util::GetArraySize( GetParentMenu( index_parent ) );
 
 		if( !isValidParent( parent ) )
 		{
@@ -908,6 +877,8 @@ class Shop
 			return;
 		}
 
+		weapon_base_reference = util::GetBaseWeapon( weapon ).name;		
+
 		if( isParentGunDependent( parent ) )
 		{
 			if( !util::isValidWeapon( weapon ) )
@@ -915,42 +886,36 @@ class Shop
 				return;
 			}
 
-			reference = util::GetBaseWeapon( weapon ).name;
-
 			cycling = true;
 
-
 			do
-			{
-				scroll = GetParentScroll_Sub( parent, reference ) + increment;
-				scroll = CheckScrollBounds_Horizontal( index_parent, scroll );
-				SetParentScroll_Sub( parent, reference, scroll );				
+			{				
+				scroll = GetParentScroll( parent, weapon_base_reference ) + increment;
+				scroll = CheckScrollBounds_Horizontal( parent_menu_size, scroll );
+				SetParentScroll( parent, weapon_base_reference, scroll );				
 
-				IPrintLn( scroll );
-
-				if( util::CompareStrings( menu[ index_parent ][ scroll ].reference, reference ) )
+				if( util::CompareStrings( menu[ index_parent ][ scroll ].weapon_base_reference, weapon_base_reference ) )
 				{
 					cycling = false;
-				}				
+				}
 			}
 			while( cycling );
 		}
 		else
 		{
-			scroll = GetParentScroll( parent ) + increment;
-			scroll = CheckScrollBounds_Horizontal( index_parent, scroll );
-
-			SetParentScroll( parent, scroll );
+			scroll = GetParentScroll( parent, weapon_base_reference ) + increment;
+			scroll = CheckScrollBounds_Horizontal( parent_menu_size, scroll );
+			SetParentScroll( parent, weapon_base_reference, scroll );
 		}
 	}	
 
-	function private CheckScrollBounds_Horizontal( index_parent, scroll )
+	function private CheckScrollBounds_Horizontal( parent_menu_size, scroll )
 	{
 		if( scroll < 0 )
 		{
-			scroll = menu[ index_parent ].size - 1;
+			scroll = parent_menu_size - 1;
 		}
-		else if( scroll > menu[ index_parent ].size - 1 )
+		else if( scroll > parent_menu_size - 1 )
 		{
 			scroll = 0;
 		}
@@ -966,16 +931,42 @@ class Shop
 					When a callback is added, the latest element of the specified parent is associated with that call.					
 					All of the fields associated with the element are available to use.
 
-	Parameters:		1) team
-					2) element
-					3) state (bought, available, and swappable)
+	Notes:			Each callback is passed the following parameters in this order:
 
-	Usage:			Typically these callbacks are used to update the shop when multiple different events can occur instead of just when a shop function is called.
+						1) team 	- the player's team
+						2) element	- the complete option struct from the shop assiciated with the callback
+						3) state 	- whether the option is bought, available, or swappable
 
-	Example:		The "Buy Max Ammo" option needs to checked/updated whenever a player switches weapons, buys ammo, buys a new gun, or when the weapon is fired.
-					"PurchaseMaxAmmo()" will only update the option when ammo is bought, but it still needs to updated for the other cases listed above.
-					The callback "ShopCallback_MaxAmmo()" is called whenever a weapon is fired, max ammo for all weapons is bought, or when a weapon is switched to keep the otion up to date.
-					If an option can only be affected through the normal shop function, no callback is required. (Ex: Buying Perks)
+	Usage:			Typically these callbacks are used to update the shop when events can update an option other than when the option function is called.
+					See below for the following example use cases:
+
+					1) When a Callback is needed - Purchasing ripper power
+
+						By default, the option to buy ripper power is in the shop even though a zombie does not have it when they are first turned.
+						Whether or not power can be purchased can be affected by any of the following:
+
+							A) Does the ripper already have max power?
+							B) Does the player have the wepaon?
+							C) Is the ripper currently active?
+
+						Purchasing power would set the "bought" state to "true" and change the option text accordingly through the option's function, initially satisfying condition (A).
+						However, conditions (B) and (C) are not handled by purchaing power. In order to further handle condition (B) and ssatisfy condition (C), a Callback is needed.
+						The following events are used to call "ShopCallback_PowerPurchased" and ensure the option is handled properly outside outisde of purchaing power:
+
+							i)		"shop_gadget_activated"		- when the ripper is activated
+							ii)		"shop_gadget_deactivated"	- when the ripper is deactivated
+							iii)	"shop_weapon_purchased" 	- when the weapon is purchased
+							iv)		"shop_weapon_purchased" 	- cleanup for when power is purchased
+
+						See the actual callback bellow for implimentation.
+
+					2) When a Callback is not needed - Purchasing a perk
+
+						Unlike purchaing power or ammo, only one event can affect the status of purchasing a perk, actually purchasing the perk.
+						Updating the option's status is within the actual shop function.
+
+
+					TLDR:	Use a Callback when more than one event can affect the state of an option.
 
 ------------------------------------------------------------------------------------- */
 
@@ -992,9 +983,9 @@ function ShopCallback_PowerPurchased( team, element, state )
 	}
 	else
 	{
-		//the player has a gadget, check to see if it have max power
+		//the player has a gadget, check to see if it has max power or if it's in use
 		slot = 0;
-		if( self GadgetPowerGet( slot ) == 100 )
+		if( self GadgetPowerGet( slot ) == 100 || self GadgetIsActive( slot ) || self GadgetIsReady( slot ) || self GadgetIsPrimed( slot ) )
 		{
 			element.bought = true;
 			element.available = false;
@@ -1020,7 +1011,7 @@ function ShopCallback_AttachmentUpgrade( team, element, state )
 	attachments = weapon_current.attachments;
 	optic_reference = self util::GetOpticOnWeapon( weapon_current );
 
-	if( !util::CompareStrings( element.reference, weapon_current_base_reference ) )
+	if( !util::CompareStrings( element.weapon_base_reference, weapon_current_base_reference ) )
 	{
 		return;
 	}
